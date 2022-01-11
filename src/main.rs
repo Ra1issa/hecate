@@ -24,6 +24,28 @@ pub struct Moderator{
     sig_pk: RistrettoPoint,
 }
 
+pub struct Mfrank{
+    x1: Vec<u8>,
+    x2: Vec<u8>,
+    mod_sig: Vec<u8>,
+    send_sig: Vec<u8>,
+    pke: RistrettoPoint,
+    com: Vec<u8>,
+    randc: Vec<u8>,
+}
+
+pub struct Token{
+    x1: Vec<u8>,
+    mod_sig: Vec<u8>,
+    ske: Scalar,
+    pke: RistrettoPoint,
+}
+
+pub struct Report{
+    id: String,
+    time: String,
+}
+
 pub fn random_block(size: u8) -> Vec<u8>{
     let mut block = Vec::new();
     for i in 0..size {
@@ -32,11 +54,21 @@ pub fn random_block(size: u8) -> Vec<u8>{
     return block;
 }
 
-// pub fn add_bytes(a: &[u8], b: &[u8]) -> Vec<u8>{
-//     let max_len = max(a.len(), b.len());
-//
-//
-// }
+pub fn add_bytes(a: &[u8], b: &[u8]) -> Vec<u8>{
+    let mut c = Vec::new();
+    for i in 0..a.len(){
+        c.push(a[i] + b[i])
+    }
+    return c;
+}
+
+pub fn sub_bytes(b: &[u8], c: &[u8]) -> Vec<u8>{
+    let mut a = Vec::new();
+    for i in 0..a.len(){
+        a.push(b[i] - c[i])
+    }
+    return a;
+}
 
 pub fn generate_keys(rng: &mut OsRng) -> (Scalar, RistrettoPoint){
     let sk: Scalar = Scalar::random(rng);
@@ -47,20 +79,22 @@ pub fn generate_keys(rng: &mut OsRng) -> (Scalar, RistrettoPoint){
 pub fn setup_moderator(rng: &mut OsRng) -> Moderator{
     let (sig_sk, sig_pk) = generate_keys(rng);
     let enc_sk = random_block(32);
-    Moderator{
+    Moderator
+    {
         enc_sk,
         sig_sk,
         sig_pk,
     }
 }
 
-pub fn generate_token(
+pub fn generate_token
+(
     id: String,
     m: Moderator,
     nonce: &[u8],
     aad: &[u8],
     rng: &mut OsRng,
-)->(Vec<u8>, Vec<u8>, Scalar, RistrettoPoint){
+) -> Token {
 
     let randomness = random_block(32);
 
@@ -79,24 +113,50 @@ pub fn generate_token(
     let (ske, pke) = generate_keys(rng);
 
     // Sign
-    let signature = poksho::sign(m.sig_sk, m.sig_pk, &x1, &randomness).unwrap();
-    return (x1, signature, ske, pke)
+    let mod_sig = poksho::sign(m.sig_sk, m.sig_pk, &x1, &randomness).unwrap();
+
+    Token
+    {
+        x1,
+        mod_sig,
+        ske,
+        pke,
+    }
 }
 
 fn generate_frank(
     msg: String,
-    x1: &[u8],
-    mod_sig: &[u8],
+    x1: Vec<u8>,
+    mod_sig: Vec<u8>,
     ske: Scalar,
     pke: RistrettoPoint
- )-> (){
+)-> Mfrank{
      // Hash message
      let mut hasher = Sha256::new();
      hasher.update(msg);
      let hash = hasher.finalize();
 
-     // // Additively split x1 and H(m) into x2
-     // let x2 = add_bytes(x1, hash);
+     // Additively split x1 and H(m) into x2
+     let x2 = add_bytes(&x1, &hash);
+
+     // Commit x1 and x2
+     let x = [x1.clone(), x2.clone()].concat();
+     let randc = random_block(32);
+     let com = crypto::hmac_sha256(&randc, &x).unwrap().to_vec();
+
+     // Sign x2
+     let rands= random_block(32);
+     let send_sig = poksho::sign(ske, pke, &x2, &rands).unwrap();
+     Mfrank
+     {
+         x1,
+         x2,
+         mod_sig,
+         send_sig,
+         pke,
+         com,
+         randc,
+     }
 }
 
 fn main(){
@@ -107,33 +167,10 @@ fn main(){
     let msg = "hello".to_string();
 
     let m = setup_moderator(&mut rng);
-    let (x1, mod_sig, ske, pke) = generate_token("01".to_string(), m, &nonce, &aad, &mut rng);
-    generate_frank(msg, &x1, &mod_sig, ske, pke);
+    let tk = generate_token("01".to_string(), m, &nonce, &aad, &mut rng);
+    let mf = generate_frank(msg, tk.x1, tk.mod_sig, tk.ske, tk.pke);
 
-    // let (sk, pk) = generate_sign_keys(&mut rng);
-    // let randomness = random_block(32);
-    // let message = "32";
-    // let pt = hex::decode(message.clone()).expect("valid hex");
-    // let message = message.as_bytes();
-    //
-    // let signature = poksho::sign(sk, pk, &message, &randomness).unwrap();
-    // let a = poksho::verify_signature(&signature, pk, &message).unwrap();
-    //
-    // let hm = crypto::hmac_sha256(&randomness, &message).unwrap();
-    //
-    // let (key, nonce, aad) = test_keys::generate_test_enc_keys();
-    // let mut buf = pt.clone();
-    // println!("original message {:?}", buf);
-    // println!("key size {:?}", key.len());
-    // println!("nonce size {:?}", &nonce.len());
-    // println!("aad size {:?}", aad.len());
-    //
-    //
-    // println!("enc message {:?}", buf);
-    //
+
     // let mut gcm_dec = Aes256GcmDecryption::new(&key, &nonce, &aad).unwrap();
     // gcm_dec.decrypt(&mut buf).unwrap();
-    //
-    // println!("dec message {:?}", buf);
-
 }
