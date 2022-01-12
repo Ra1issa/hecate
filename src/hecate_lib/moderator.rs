@@ -16,14 +16,14 @@ use curve25519_dalek::{
 };
 use chrono::Utc;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Moderator{
     enc_sk: Vec<u8>,
     sig_sk: Scalar,
     pub sig_pk: RistrettoPoint,
 }
 
-
+#[derive(Clone, Debug)]
 pub struct Token{
     pub x1: Vec<u8>,
     pub nonce: Vec<u8>,

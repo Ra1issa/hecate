@@ -15,9 +15,10 @@ use std::{
     convert::TryInto,
     str::from_utf8,
 };
+use serde::{Serialize, Deserialize};
 use chrono::DateTime;
 
-#[derive(Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Mfrank{
     pub msg: String,
     pub x1: Vec<u8>,
