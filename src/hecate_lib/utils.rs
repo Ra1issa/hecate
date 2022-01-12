@@ -31,8 +31,9 @@ pub fn sub_bytes(b: &[u8], c: &[u8]) -> Vec<u8>{
     return a;
 }
 
-pub fn generate_keys(rng: &mut OsRng) -> (Scalar, RistrettoPoint){
-    let sk: Scalar = Scalar::random(rng);
+pub fn generate_keys() -> (Scalar, RistrettoPoint){
+    let mut rng = OsRng;
+    let sk: Scalar = Scalar::random(&mut rng);
     let pk = sk * RISTRETTO_BASEPOINT_POINT;
     return (sk, pk);
 }

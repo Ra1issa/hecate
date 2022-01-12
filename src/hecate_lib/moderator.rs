@@ -14,7 +14,6 @@ use curve25519_dalek::{
     scalar::Scalar,
     ristretto::RistrettoPoint,
 };
-use rand_core::OsRng;
 use chrono::Utc;
 
 #[derive(Clone)]
@@ -41,8 +40,8 @@ pub struct Report{
 }
 
 
-pub fn setup_moderator(rng: &mut OsRng) -> Moderator{
-    let (sig_sk, sig_pk) = utils::generate_keys(rng);
+pub fn setup_moderator() -> Moderator{
+    let (sig_sk, sig_pk) = utils::generate_keys();
     let enc_sk = utils::random_block(32);
     Moderator
     {
@@ -56,7 +55,6 @@ pub fn generate_token
 (
     id: Vec<u8>,
     m: Moderator,
-    rng: &mut OsRng,
 ) -> Token {
 
     let randomness = utils::random_block(32);
@@ -75,7 +73,7 @@ pub fn generate_token
     let time = time.as_bytes().to_vec();
 
     // Generate ephemeral keys
-    let (ske, pke) = utils::generate_keys(rng);
+    let (ske, pke) = utils::generate_keys();
 
     // Concatenate what will be signed
 
