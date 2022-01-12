@@ -15,7 +15,7 @@ use curve25519_dalek::{
 use hex;
 use rand::Rng;
 use rand_core::OsRng;
-use chrono;
+use chrono::Utc;
 use std::{
     str,
     cmp::max,
@@ -29,6 +29,7 @@ pub struct Moderator{
     sig_sk: Scalar,
     sig_pk: RistrettoPoint,
 }
+
 #[derive(Clone)]
 pub struct Mfrank{
     msg: String,
@@ -116,7 +117,7 @@ pub fn generate_token
     let authentication_tag = gcm_enc.compute_tag().unwrap();
 
     // Time stamp
-    let time = chrono::offset::Utc::now();
+    let time = Utc::now().time();
     println!("time {:?}", time);
 
     // Generate ephemeral keys
@@ -176,8 +177,6 @@ fn check_message(
     // Verify Signatures
     let ver_send = poksho::verify_signature(&mf.send_sig, mf.pke, &mf.x2).unwrap();
     let ver_mod = poksho::verify_signature(&mf.mod_sig, mod_pk, &mf.x1).unwrap();
-    assert_eq!(ver_send, ());
-    assert_eq!(ver_mod, ());
 
     // Verify Commitment
     let x = [mf.x1.clone(), mf.x2.clone()].concat();
