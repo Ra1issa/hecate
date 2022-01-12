@@ -125,7 +125,7 @@ pub fn generate_token
     let mod_sig = poksho::sign(m.sig_sk, m.sig_pk, &x1, &randomness).unwrap();
 
     // Store nonce
-    let str_x1 = str::from_utf8(&x1).unwrap().to_string();
+    let str_x1 = format!("{:?}", &x1);
     m.state.insert(str_x1, nonce);
 
     Token
@@ -199,8 +199,8 @@ fn check_message(mf: Mfrank, mod_pk: RistrettoPoint)-> bool{
 
 fn inspect(mf: Mfrank, m: Moderator) -> Report{
     let aad = "".as_bytes();
-    let str_x1 = str::from_utf8(&mf.x1).unwrap();
-    let nonce = m.state.get(str_x1).unwrap();
+    let str_x1 = format!("{:?}", &mf.x1);
+    let nonce = m.state.get(&str_x1).unwrap();
 
     let b = check_message(mf.clone(), m.sig_pk);
     assert_eq!(b, true);
