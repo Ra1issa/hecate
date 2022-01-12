@@ -5,8 +5,17 @@ use crate::hecate_lib::{
 };
 use poksho;
 use libsignal_protocol::crypto;
-use curve25519_dalek::ristretto::RistrettoPoint;
+use curve25519_dalek::ristretto::{
+    RistrettoPoint,
+    CompressedRistretto,
+};
+use curve25519_dalek::scalar::Scalar;
 use sha2::{Sha256, Digest};
+use std::{
+    convert::TryInto,
+    str::from_utf8,
+};
+use chrono::DateTime;
 
 #[derive(Clone)]
 pub struct Mfrank{
@@ -16,9 +25,10 @@ pub struct Mfrank{
     pub nonce: Vec<u8>,
     pub mod_sig: Vec<u8>,
     pub send_sig: Vec<u8>,
-    pub pke: RistrettoPoint,
+    pub pke: Vec<u8>,
     pub com: Vec<u8>,
     pub randc: Vec<u8>,
+    pub time_mod: Vec<u8>,
 }
 
 pub fn generate_frank(
@@ -38,9 +48,15 @@ pub fn generate_frank(
      let randc = utils::random_block(32);
      let com = crypto::hmac_sha256(&randc, &x).unwrap().to_vec();
 
+     // Turn pke/ske back to RistrettoPt and scalar
+     let r_pke = CompressedRistretto(token.pke.clone().try_into().unwrap());
+     let r_pke = r_pke.decompress().unwrap();
+
+     let s_ske = Scalar::from_canonical_bytes(token.ske.try_into().unwrap()).unwrap();
+
      // Sign x2
      let rands= utils::random_block(32);
-     let send_sig = poksho::sign(token.ske, token.pke, &x2, &rands).unwrap();
+     let send_sig = poksho::sign(s_ske, r_pke, &x2, &rands).unwrap();
      Mfrank
      {
          msg,
@@ -52,6 +68,7 @@ pub fn generate_frank(
          pke: token.pke,
          com,
          randc,
+         time_mod: token.time,
      }
 }
 
@@ -59,9 +76,17 @@ pub fn check_message(
     mf: Mfrank,
     mod_pk: RistrettoPoint
 )-> bool{
+
+    // Concatenate moderator token
+    let s = [mf.x1.clone(), mf.nonce.clone(), mf.pke.clone(), mf.time_mod.clone()].concat();
+
+    // Turn pke back to RistrettoPt
+    let r_pke = CompressedRistretto(mf.pke.try_into().unwrap());
+    let r_pke = r_pke.decompress().unwrap();
+
     // Verify Signatures
-    poksho::verify_signature(&mf.send_sig, mf.pke, &mf.x2).unwrap();
-    poksho::verify_signature(&mf.mod_sig, mod_pk, &mf.x1).unwrap();
+    poksho::verify_signature(&mf.send_sig, r_pke, &mf.x2).unwrap();
+    poksho::verify_signature(&mf.mod_sig, mod_pk, &s).unwrap();
 
     // Verify Commitment
     let x = [mf.x1.clone(), mf.x2.clone()].concat();
@@ -76,6 +101,9 @@ pub fn check_message(
     assert_eq!(h, hash.to_vec());
 
     // Verify Time
+    let time = from_utf8(&mf.time_mod).unwrap();
+    let time_mod = DateTime::parse_from_rfc2822(time).unwrap();
+    println!("time {:?}", time_mod);
 
     return true;
 }

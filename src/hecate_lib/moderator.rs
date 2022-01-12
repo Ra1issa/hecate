@@ -29,8 +29,9 @@ pub struct Token{
     pub x1: Vec<u8>,
     pub nonce: Vec<u8>,
     pub mod_sig: Vec<u8>,
-    pub ske: Scalar,
-    pub pke: RistrettoPoint,
+    pub ske: Vec<u8>,
+    pub pke: Vec<u8>,
+    pub time: Vec<u8>,
 }
 
 pub struct Report{
@@ -69,22 +70,32 @@ pub fn generate_token
     let _authentication_tag = gcm_enc.compute_tag().unwrap();
 
     // Time stamp
-    let time = Utc::now().time();
-    println!("time {:?}", time);
+    let time = Utc::now().to_rfc2822();
+    let time = time.to_string();
+    let time = time.as_bytes().to_vec();
 
     // Generate ephemeral keys
     let (ske, pke) = utils::generate_keys(rng);
 
+    // Concatenate what will be signed
+
+    // Compress RistrettoPt and cast it to the bytes
+    let pke = pke.compress();
+    let pke = pke.as_bytes().to_vec();
+
+    let s = [x1.clone(), nonce.clone(), pke.clone(), time.clone()].concat();
+
     // Sign
-    let mod_sig = poksho::sign(m.sig_sk, m.sig_pk, &x1, &randomness).unwrap();
+    let mod_sig = poksho::sign(m.sig_sk, m.sig_pk, &s, &randomness).unwrap();
 
     Token
     {
         x1,
         nonce,
         mod_sig,
-        ske,
+        ske: ske.to_bytes().to_vec(),
         pke,
+        time,
     }
 }
 
