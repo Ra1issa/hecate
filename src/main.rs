@@ -4,7 +4,8 @@ use poksho;
 use libsignal_protocol::crypto;
 use signal_crypto::{
     Aes256GcmEncryption,
-    Aes256GcmDecryption};
+    Aes256GcmDecryption,
+};
 
 use curve25519_dalek::{
     scalar::Scalar,
@@ -15,16 +16,22 @@ use hex;
 use rand::Rng;
 use rand_core::OsRng;
 use chrono;
-use std::{str,cmp::max};
+use std::{
+    str,
+    cmp::max,
+    collections::HashMap,
+};
 use sha2::{Sha256, Digest};
 
 pub struct Moderator{
     enc_sk: Vec<u8>,
     sig_sk: Scalar,
     sig_pk: RistrettoPoint,
+    state: HashMap<String, Vec<u8>>,
 }
-
+#[derive(Clone)]
 pub struct Mfrank{
+    msg: String,
     x1: Vec<u8>,
     x2: Vec<u8>,
     mod_sig: Vec<u8>,
@@ -43,6 +50,7 @@ pub struct Token{
 
 pub struct Report{
     id: String,
+    msg: String,
     time: String,
 }
 
@@ -84,19 +92,20 @@ pub fn setup_moderator(rng: &mut OsRng) -> Moderator{
         enc_sk,
         sig_sk,
         sig_pk,
+        state: HashMap::new(),
     }
 }
 
 pub fn generate_token
 (
     id: String,
-    m: Moderator,
-    nonce: &[u8],
-    aad: &[u8],
+    mut m: Moderator,
     rng: &mut OsRng,
 ) -> Token {
 
     let randomness = random_block(32);
+    let nonce = random_block(12);
+    let aad = "".as_bytes();
 
     // Generate x1
     let pt = hex::decode(id.clone()).expect("valid hex");
@@ -114,6 +123,10 @@ pub fn generate_token
 
     // Sign
     let mod_sig = poksho::sign(m.sig_sk, m.sig_pk, &x1, &randomness).unwrap();
+
+    // Store nonce
+    let str_x1 = str::from_utf8(&x1).unwrap().to_string();
+    m.state.insert(str_x1, nonce);
 
     Token
     {
@@ -133,7 +146,7 @@ fn generate_frank(
 )-> Mfrank{
      // Hash message
      let mut hasher = Sha256::new();
-     hasher.update(msg);
+     hasher.update(msg.clone());
      let hash = hasher.finalize();
 
      // Additively split x1 and H(m) into x2
@@ -149,6 +162,7 @@ fn generate_frank(
      let send_sig = poksho::sign(ske, pke, &x2, &rands).unwrap();
      Mfrank
      {
+         msg,
          x1,
          x2,
          mod_sig,
@@ -159,18 +173,62 @@ fn generate_frank(
      }
 }
 
+fn check_message(mf: Mfrank, mod_pk: RistrettoPoint)-> bool{
+    // Verify Signatures
+    let ver_send = poksho::verify_signature(&mf.send_sig, mf.pke, &mf.x2).unwrap();
+    let ver_mod = poksho::verify_signature(&mf.mod_sig, mod_pk, &mf.x1).unwrap();
+    // assert_eq!(ver_send, ());
+    // assert_eq!(ver_mod, ());
+
+    // Verify Commitment
+    let x = [mf.x1.clone(), mf.x2.clone()].concat();
+    let com = crypto::hmac_sha256(&mf.randc, &x).unwrap().to_vec();
+    assert_eq!(com, mf.com);
+
+    // Verify Hash
+    let h = sub_bytes(&mf.x1, &mf.x2);
+    let mut hasher = Sha256::new();
+    hasher.update(mf.msg);
+    let hash = hasher.finalize();
+    assert_eq!(h, hash.to_vec());
+
+    // Verify Time
+
+    return true;
+}
+
+fn inspect(mf: Mfrank, m: Moderator) -> Report{
+    let aad = "".as_bytes();
+    let str_x1 = str::from_utf8(&mf.x1).unwrap();
+    let nonce = m.state.get(str_x1).unwrap();
+
+    let b = check_message(mf.clone(), m.sig_pk);
+    assert_eq!(b, true);
+
+    let mut buf = mf.x1.clone();
+    let mut gcm_dec = Aes256GcmDecryption::new(&m.enc_sk, &nonce, &aad).unwrap();
+    gcm_dec.decrypt(&mut buf).unwrap();
+
+    let id = str::from_utf8(&buf).unwrap();
+
+    Report{
+        id: id.to_string(),
+        msg: mf.msg,
+        time: "".to_string(),
+    }
+}
+
+
 fn main(){
 
     let mut rng = OsRng;
-    let nonce = random_block(12);
-    let aad = random_block(16);
     let msg = "hello".to_string();
+    let id = "01".to_string();
 
     let m = setup_moderator(&mut rng);
-    let tk = generate_token("01".to_string(), m, &nonce, &aad, &mut rng);
+    let tk = generate_token(id, m, &mut rng);
     let mf = generate_frank(msg, tk.x1, tk.mod_sig, tk.ske, tk.pke);
 
 
-    // let mut gcm_dec = Aes256GcmDecryption::new(&key, &nonce, &aad).unwrap();
-    // gcm_dec.decrypt(&mut buf).unwrap();
+
 }
