@@ -16,8 +16,9 @@ use curve25519_dalek::{
     ristretto::RistrettoPoint,
 };
 use chrono::Utc;
+use serde::{Serialize, Deserialize};
 
-#[derive(Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Moderator{
     enc_sk: Vec<u8>,
     sig_sk: Scalar,

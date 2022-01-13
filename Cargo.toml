@@ -35,5 +35,13 @@ name = "sender"
 path = "src/sender/main.rs"
 
 [[bin]]
-name = "moderator"
-path = "src/moderator/main.rs"
+name = "receiver"
+path = "src/receiver/main.rs"
+
+[[bin]]
+name = "moderator_generate"
+path = "src/moderator/generate/main.rs"
+
+[[bin]]
+name = "moderator_inspect"
+path = "src/moderator/inspect/main.rs"

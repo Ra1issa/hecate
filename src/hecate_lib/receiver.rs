@@ -9,11 +9,7 @@ use curve25519_dalek::ristretto::{
     CompressedRistretto,
 };
 use sha2::{Sha256, Digest};
-use std::{
-    convert::TryInto,
-    str::from_utf8,
-};
-use chrono::DateTime;
+use std::convert::TryInto;
 
 pub fn check_message(
     mf: Mfrank,
@@ -44,9 +40,8 @@ pub fn check_message(
     assert_eq!(h, hash.to_vec());
 
     // Verify Time
-    let time = from_utf8(&mf.time_mod).unwrap();
-    let time_mod = DateTime::parse_from_rfc2822(time).unwrap();
-    println!("time {:?}", time_mod);
+    let time = i64::from_le_bytes(mf.time_mod.try_into().unwrap());
+    println!("timestamp {:?}", time);
 
     return true;
 }

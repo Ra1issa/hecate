@@ -10,9 +10,10 @@ use std::{
     env,
     fs::File,
     io::{Read, Write},
+    path::PathBuf,
 };
 use serde::{Serialize, Deserialize};
-use serde_json;
+
 
 pub fn random_block(size: u8) -> Vec<u8>{
     let mut block = Vec::new();
@@ -53,29 +54,13 @@ pub fn write_to_file<'a, T: Serialize>
 ){
     let data = bincode::serialize(&data).unwrap();
 
-    let mut path = env::current_dir().unwrap();
+    let mut path = get_project_path();
     path.push("data");
     path.push(file_name);
     let path_str = path.clone().into_os_string().into_string().unwrap();
-    println!("path {:?}", path_str);
+    println!("path {:?}", file!());
     let mut file = File::create(path_str).unwrap();
     file.write(&data).unwrap();
-}
-
-pub fn write_to_file_json<'a, T: Serialize>
-(
-    data: T,
-    file_name: &str
-){
-    let data = &serde_json::to_string(&data).unwrap();
-
-    let mut path = env::current_dir().unwrap();
-    path.push("data");
-    path.push(file_name);
-    let path_str = path.clone().into_os_string().into_string().unwrap();
-
-    let mut file = File::create(path_str).unwrap();
-    file.write(&data.as_bytes()).unwrap();
 }
 
 pub fn read_from_file<'a, T>
@@ -86,7 +71,8 @@ pub fn read_from_file<'a, T>
 where
     T:  Deserialize<'a>
 {
-    let mut path = env::current_dir().unwrap();
+    let mut path = get_project_path();
+    println!("path {:?}", path);
     path.push("data");
     path.push(file_name);
     let path_str = path.clone().into_os_string().into_string().unwrap();
@@ -95,4 +81,13 @@ where
     file.read_to_end(buff).unwrap();
     let msg: T = bincode::deserialize(buff).unwrap();
     return msg;
+}
+
+
+pub fn get_project_path() -> PathBuf{
+    let mut path = env::current_exe().unwrap();
+    path.pop();
+    path.pop();
+    path.pop();
+    return path;
 }

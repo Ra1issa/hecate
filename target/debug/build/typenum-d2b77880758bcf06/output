@@ -1,0 +1,2 @@
+cargo:rustc-env=TYPENUM_BUILD_CONSTS=/home/petitpenguin/Documents/Github/hecate/target/debug/build/typenum-d2b77880758bcf06/out/consts.rs
+cargo:rustc-env=TYPENUM_BUILD_OP=/home/petitpenguin/Documents/Github/hecate/target/debug/build/typenum-d2b77880758bcf06/out/op.rs
