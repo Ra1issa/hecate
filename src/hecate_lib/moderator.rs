@@ -52,9 +52,8 @@ pub fn generate_token
     let _authentication_tag = gcm_enc.compute_tag().unwrap();
 
     // Time stamp
-    let time = Utc::now().to_rfc2822();
-    let time = time.to_string();
-    let time = time.as_bytes().to_vec();
+    let dt = Utc::now();
+    let time = dt.timestamp().to_le_bytes().to_vec();
 
     // Generate ephemeral keys
     let (ske, pke) = utils::generate_keys();

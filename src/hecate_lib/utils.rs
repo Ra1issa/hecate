@@ -67,13 +67,13 @@ pub fn write_to_file_json<'a, T: Serialize>
     data: T,
     file_name: &str
 ){
-    let data = serde_json::to_string(&data).unwrap();
+    let data = &serde_json::to_string(&data).unwrap();
 
     let mut path = env::current_dir().unwrap();
     path.push("data");
     path.push(file_name);
     let path_str = path.clone().into_os_string().into_string().unwrap();
-    println!("path {:?}", path_str);
+
     let mut file = File::create(path_str).unwrap();
     file.write(&data.as_bytes()).unwrap();
 }
