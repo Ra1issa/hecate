@@ -8,4 +8,5 @@ cargo run --release --bin moderator
 cargo run --release --bin sender $message
 
 cd ../signal-cli
-cat ../hecate/data/mfrank.txt | ./build/install/signal-cli/bin/signal-cli -u ${sender_phone} send ${receiver_phone}
+# cat ../hecate/data/mfrank.txt
+echo "hello" | ./build/install/signal-cli/bin/signal-cli -u ${sender_phone} send ${receiver_phone}
