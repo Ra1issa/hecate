@@ -27,3 +27,12 @@ branch = "3.0.0-lizard2"
 
 [profile.dev.package.num-bigint-dig]
 opt-level = 3 # too slow otherwise!
+
+
+[[bin]]
+name = "sender"
+path = "src/sender/main.rs"
+
+[[bin]]
+name = "moderator"
+path = "src/moderator/main.rs"

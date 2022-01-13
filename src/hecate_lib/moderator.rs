@@ -1,6 +1,7 @@
 use crate::hecate_lib::{
     utils,
-    user::{Mfrank, check_message},
+    receiver::check_message,
+    types::{Mfrank, Token, Report},
 };
 
 use poksho;
@@ -22,23 +23,6 @@ pub struct Moderator{
     sig_sk: Scalar,
     pub sig_pk: RistrettoPoint,
 }
-
-#[derive(Clone, Debug)]
-pub struct Token{
-    pub x1: Vec<u8>,
-    pub nonce: Vec<u8>,
-    pub mod_sig: Vec<u8>,
-    pub ske: Vec<u8>,
-    pub pke: Vec<u8>,
-    pub time: Vec<u8>,
-}
-
-pub struct Report{
-    pub id: Vec<u8>,
-    pub msg: String,
-    pub time: String,
-}
-
 
 pub fn setup_moderator() -> Moderator{
     let (sig_sk, sig_pk) = utils::generate_keys();
@@ -75,12 +59,11 @@ pub fn generate_token
     // Generate ephemeral keys
     let (ske, pke) = utils::generate_keys();
 
-    // Concatenate what will be signed
-
     // Compress RistrettoPt and cast it to the bytes
     let pke = pke.compress();
     let pke = pke.as_bytes().to_vec();
 
+    // Concatenate what will be signed
     let s = [x1.clone(), nonce.clone(), pke.clone(), time.clone()].concat();
 
     // Sign
