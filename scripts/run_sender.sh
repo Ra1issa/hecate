@@ -4,6 +4,7 @@ sender_phone=+16172991780
 message=Hello
 receiver_phone=+16174190472
 
+#+16174190472
 echo "Generate Tokens"
 cargo run --release --bin moderator_generate
 

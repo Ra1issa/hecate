@@ -29,7 +29,7 @@ pub fn check_message(
 
     // Verify Commitment
     let x = [mf.x1.clone(), mf.x2.clone()].concat();
-    let com = crypto::hmac_sha256(&mf.randc, &x).unwrap().to_vec();
+    let com = crypto::hmac_sha256(&mf.randc, &x).to_vec();
     assert_eq!(com, mf.com);
 
     // Verify Hash

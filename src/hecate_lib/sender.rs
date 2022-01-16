@@ -28,7 +28,7 @@ pub fn generate_frank(
      // Commit x1 and x2
      let x = [token.x1.clone(), x2.clone()].concat();
      let randc = utils::random_block(32);
-     let com = crypto::hmac_sha256(&randc, &x).unwrap().to_vec();
+     let com = crypto::hmac_sha256(&randc, &x).to_vec();
 
      // Turn pke/ske back to RistrettoPt and scalar
      let r_pke = CompressedRistretto(token.pke.clone().try_into().unwrap());
