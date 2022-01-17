@@ -58,7 +58,7 @@ pub fn write_to_file<'a, T: Serialize>
     path.push("data");
     path.push(file_name);
     let path_str = path.clone().into_os_string().into_string().unwrap();
-    println!("path {:?}", file!());
+
     let mut file = File::create(path_str).unwrap();
     file.write(&data).unwrap();
 }
@@ -72,12 +72,11 @@ where
     T:  Deserialize<'a>
 {
     let mut path = get_project_path();
-    println!("path {:?}", path);
     path.push("data");
     path.push(file_name);
     let path_str = path.clone().into_os_string().into_string().unwrap();
-    let mut file = File::open(path_str).unwrap();
 
+    let mut file = File::open(path_str).unwrap();
     file.read_to_end(buff).unwrap();
     let msg: T = bincode::deserialize(buff).unwrap();
     return msg;

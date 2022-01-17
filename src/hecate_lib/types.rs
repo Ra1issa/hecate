@@ -32,7 +32,13 @@ pub struct Envelope{
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Report{
+    pub mfrank: Mfrank,
+    pub envelope: Envelope,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct Trace{
     pub id: Vec<u8>,
     pub msg: String,
-    pub time: String,
+    pub time_diff: i64,
 }

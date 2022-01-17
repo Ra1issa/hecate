@@ -1,11 +1,17 @@
 use hecate::hecate_lib::{
     receiver,
     utils,
-    types::{Envelope, Mfrank},
+    types::{Envelope, Mfrank, Report},
 };
 use curve25519_dalek::ristretto::RistrettoPoint;
+use std::{
+    net::{
+        TcpListener,
+    },
+    io::Write
+};
 
-fn main(){
+pub fn verify_message()-> Report{
     let mut buff_mfrank = Vec::new();
     let mfrank = utils::read_from_file::<Mfrank>("mfrank.txt",&mut buff_mfrank);
 
@@ -18,5 +24,37 @@ fn main(){
     let mut buff_env = Vec::new();
     let envelope = utils::read_from_file::<Envelope>("envelope.txt",&mut buff_env);
 
-    let _b = receiver::check_message(mfrank, envelope, mod_pk, plat_pk);
+    let _b = receiver::check_message(mfrank.clone(), envelope.clone(), mod_pk, plat_pk);
+    Report{
+        mfrank,
+        envelope,
+    }
+}
+
+pub fn report(report: Report){
+    let address = "127.0.0.1:3000";
+    let listener = TcpListener::bind(address).unwrap();
+    println!("Server listening on port 3000");
+
+    for stream in listener.incoming() {
+        match stream {
+            Ok(mut stream) => {
+                println!("New connection: {}", stream.peer_addr().unwrap());
+
+                let report_bytes = bincode::serialize(&report).unwrap();
+                let _ = stream.write_all(&report_bytes);
+                let _ = stream.flush();
+                return;
+            }
+            Err(e) => {
+                println!("Error: {}", e);
+            }
+        }
+    }
+    drop(listener);
+}
+
+fn main(){
+    let rep = verify_message();
+    report(rep);
 }

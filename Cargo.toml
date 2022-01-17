@@ -24,8 +24,12 @@ opt-level = 3 # too slow otherwise!
 
 
 [[bin]]
-name = "sender"
-path = "src/sender/main.rs"
+name = "sender_send"
+path = "src/sender/send/main.rs"
+
+[[bin]]
+name = "sender_fetch"
+path = "src/sender/fetch_tokens/main.rs"
 
 [[bin]]
 name = "receiver"
