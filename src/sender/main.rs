@@ -12,6 +12,7 @@ fn main(){
     let mut buff = Vec::new();
     let tk = utils::read_from_file::<Token>("token.txt",&mut buff);
 
-    let mf = sender::generate_frank(msg.to_string(), tk);
+    let (mf, com) = sender::generate_frank(msg.to_string(), tk);
     utils::write_to_file::<Mfrank>(mf, "mfrank.txt");
+    utils::write_to_file::<Vec<u8>>(com, "commitment.txt");
 }

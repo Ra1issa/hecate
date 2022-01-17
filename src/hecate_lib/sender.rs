@@ -16,7 +16,7 @@ use std::{
 pub fn generate_frank(
     msg: String,
     token: Token,
-)-> Mfrank{
+)-> (Mfrank, Vec<u8>){
      // Hash message
      let mut hasher = Sha256::new();
      hasher.update(msg.clone());
@@ -39,17 +39,16 @@ pub fn generate_frank(
      // Sign x2
      let rands= utils::random_block(32);
      let send_sig = poksho::sign(s_ske, r_pke, &x2, &rands).unwrap();
-     Mfrank
-     {
-         msg,
-         x1: token.x1,
-         x2,
-         nonce: token.nonce,
-         mod_sig: token.mod_sig,
-         send_sig,
-         pke: token.pke,
-         com,
-         randc,
-         time_mod: token.time,
-     }
+     let mf = Mfrank{
+                 msg,
+                 x1: token.x1,
+                 x2,
+                 nonce: token.nonce,
+                 mod_sig: token.mod_sig,
+                 send_sig,
+                 pke: token.pke,
+                 randc,
+                 time: token.time,
+             };
+     return (mf, com);
 }

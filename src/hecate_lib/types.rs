@@ -19,9 +19,15 @@ pub struct Mfrank{
     pub mod_sig: Vec<u8>,
     pub send_sig: Vec<u8>,
     pub pke: Vec<u8>,
-    pub com: Vec<u8>,
     pub randc: Vec<u8>,
-    pub time_mod: Vec<u8>,
+    pub time: Vec<u8>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct Envelope{
+    pub com: Vec<u8>,
+    pub sig: Vec<u8>,
+    pub time: Vec<u8>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]

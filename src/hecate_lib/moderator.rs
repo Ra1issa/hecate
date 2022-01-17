@@ -1,7 +1,7 @@
 use crate::hecate_lib::{
     utils,
     receiver::check_message,
-    types::{Mfrank, Token, Report},
+    types::{Envelope, Mfrank, Token, Report},
 };
 
 use poksho;
@@ -81,10 +81,15 @@ pub fn generate_token
 }
 
 
-pub fn inspect(mf: Mfrank, m: Moderator) -> Report{
+pub fn inspect(
+    mf: Mfrank,
+    env: Envelope,
+    m: Moderator,
+    plat_pk: RistrettoPoint,
+) -> Report{
     let aad = "".as_bytes();
 
-    let b = check_message(mf.clone(), m.sig_pk);
+    let b = check_message(mf.clone(), env.clone(), m.sig_pk, plat_pk);
     assert_eq!(b, true);
 
     let mut buf = mf.x1.clone();

@@ -32,6 +32,10 @@ name = "receiver"
 path = "src/receiver/main.rs"
 
 [[bin]]
+name = "platform"
+path = "src/platform/main.rs"
+
+[[bin]]
 name = "moderator_generate"
 path = "src/moderator/generate/main.rs"
 

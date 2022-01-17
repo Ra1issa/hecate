@@ -17,6 +17,7 @@ sed -e "s/Profile//g" output.txt > output2.txt
 rm output.txt
 mv output2.txt mfrank_received.txt
 
+
 echo "Receiver Check Message"
 cargo run --release --bin receiver
 

@@ -16,3 +16,6 @@ cd ../signal-cli
 # echo "hello"
 echo "Send Mfrank"
 cat ../hecate/data/mfrank.txt | ./build/install/signal-cli/bin/signal-cli -u ${sender_phone} send ${receiver_phone}
+
+echo "Timestamp and signa Mfrank"
+cargo run --release --bin platform

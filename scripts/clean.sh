@@ -1,5 +1,8 @@
+cd ../data
+rm *
+cd ..
 cargo clean
-cd ../../libsignal-client
+cd ../libsignal-client
 cargo clean
 cd ../signal-cli
 ./gradlew clean

@@ -1,6 +1,6 @@
 use crate::hecate_lib::{
     utils,
-    types::Mfrank,
+    types::{Mfrank, Envelope},
 };
 use poksho;
 use libsignal_protocol::crypto;
@@ -13,11 +13,14 @@ use std::convert::TryInto;
 
 pub fn check_message(
     mf: Mfrank,
-    mod_pk: RistrettoPoint
+    env: Envelope,
+    mod_pk: RistrettoPoint,
+    plat_pk: RistrettoPoint,
 )-> bool{
 
     // Concatenate moderator token
-    let s = [mf.x1.clone(), mf.nonce.clone(), mf.pke.clone(), mf.time_mod.clone()].concat();
+    let s = [mf.x1.clone(), mf.nonce.clone(), mf.pke.clone(), mf.time.clone()].concat();
+    let e = [env.com.clone(), env.time.clone()].concat();
 
     // Turn pke back to RistrettoPt
     let r_pke = CompressedRistretto(mf.pke.try_into().unwrap());
@@ -26,11 +29,12 @@ pub fn check_message(
     // Verify Signatures
     poksho::verify_signature(&mf.send_sig, r_pke, &mf.x2).unwrap();
     poksho::verify_signature(&mf.mod_sig, mod_pk, &s).unwrap();
+    poksho::verify_signature(&env.sig, plat_pk, &e).unwrap();
 
     // Verify Commitment
     let x = [mf.x1.clone(), mf.x2.clone()].concat();
     let com = crypto::hmac_sha256(&mf.randc, &x).to_vec();
-    assert_eq!(com, mf.com);
+    assert_eq!(com, env.com);
 
     // Verify Hash
     let h = utils::sub_bytes(&mf.x1, &mf.x2);
@@ -40,8 +44,9 @@ pub fn check_message(
     assert_eq!(h, hash.to_vec());
 
     // Verify Time
-    let time = i64::from_le_bytes(mf.time_mod.try_into().unwrap());
-    println!("timestamp {:?}", time);
+    let time_mod = i64::from_le_bytes(mf.time.try_into().unwrap());
+    let time_plat = i64::from_le_bytes(env.time.try_into().unwrap());
+    println!("timestamp diff {:?}", time_plat - time_mod);
 
     return true;
 }
