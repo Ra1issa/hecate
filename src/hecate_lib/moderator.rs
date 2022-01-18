@@ -68,6 +68,18 @@ pub fn generate_token
     }
 }
 
+pub fn generate_batch(
+    batch_size: usize,
+    id: Vec<u8>,
+    m: Moderator,
+)-> Vec<Token>{
+    let mut batch: Vec<Token> = Vec::new();
+    for i in 0..batch_size{
+        batch.push(generate_token(id.clone(), m.clone()));
+    }
+    batch
+}
+
 
 pub fn inspect(
     report: Report,
