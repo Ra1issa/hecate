@@ -43,7 +43,7 @@ pub fn generate_test_parameters()-> Test {
 pub fn criterion_benchmark_moderator(c: &mut Criterion) {
     let test = generate_test_parameters();
     let mut group = c.benchmark_group("Moderator");
-    group.significance_level(0.1).sample_size(100);
+    group.significance_level(0.1).sample_size(150);
 
 
     let batch_sizes = [1, 10, 100, 1000, 10000];
@@ -65,6 +65,9 @@ pub fn criterion_benchmark_moderator(c: &mut Criterion) {
             )
         ));
     }
+
+    let max_time = Duration::from_secs(10);
+    group.measurement_time(max_time);
 
     group.bench_function("Moderator :: Inspect and Trace ", |b| b.iter(||
         moderator::inspect(
@@ -133,8 +136,8 @@ pub fn criterion_benchmark_platform(c: &mut Criterion) {
 
 
 criterion_group!(benches,
-    criterion_benchmark_moderator,
     criterion_benchmark_sender,
     criterion_benchmark_receiver,
-    criterion_benchmark_platform);
+    criterion_benchmark_platform,
+    criterion_benchmark_moderator);
 criterion_main!(benches);
