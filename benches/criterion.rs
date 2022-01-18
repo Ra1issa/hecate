@@ -120,6 +120,9 @@ pub fn criterion_benchmark_platform(c: &mut Criterion) {
     let mut group = c.benchmark_group("Platform");
     group.significance_level(0.1).sample_size(300);
 
+    let max_time = Duration::from_secs(15);
+    group.measurement_time(max_time);
+
     group.bench_function("Sign and Timestamp ", |b| b.iter(||
         platform::sign_com(
             black_box(test.envelope.com.clone()),
