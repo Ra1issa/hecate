@@ -45,6 +45,13 @@ pub fn criterion_benchmark_moderator(c: &mut Criterion) {
     let mut group = c.benchmark_group("Moderator");
     group.significance_level(0.1).sample_size(150);
 
+    group.bench_function("Moderator :: Inspect and Trace ", |b| b.iter(||
+        moderator::inspect(
+            black_box(test.report.clone()),
+            black_box(test.moderator.clone()),
+            black_box(test.platform.sig_pk.clone()),
+        )
+    ));
 
     let batch_sizes = [1, 10, 100, 1000, 10000];
     for i in 0..batch_sizes.len(){
@@ -65,27 +72,15 @@ pub fn criterion_benchmark_moderator(c: &mut Criterion) {
             )
         ));
     }
-
-    let max_time = Duration::from_secs(10);
-    group.measurement_time(max_time);
-
-    group.bench_function("Moderator :: Inspect and Trace ", |b| b.iter(||
-        moderator::inspect(
-            black_box(test.report.clone()),
-            black_box(test.moderator.clone()),
-            black_box(test.platform.sig_pk.clone()),
-        )
-    ));
-
 }
 
 pub fn criterion_benchmark_sender(c: &mut Criterion) {
     let test = generate_test_parameters();
     let mut group = c.benchmark_group("Sender");
-    group.significance_level(0.1).sample_size(100);
+    group.significance_level(0.1).sample_size(150);
 
     static B: usize = 1;
-    static KB: usize = 1024;
+    static KB: usize = 1000;
 
     let msg_sizes = [10 * B, 100 * B, KB, 10 * KB, 100 * KB];
     for i in 0..4 as usize{
@@ -107,7 +102,7 @@ pub fn criterion_benchmark_sender(c: &mut Criterion) {
 pub fn criterion_benchmark_receiver(c: &mut Criterion) {
     let test = generate_test_parameters();
     let mut group = c.benchmark_group("Receiver");
-    group.significance_level(0.1).sample_size(100);
+    group.significance_level(0.1).sample_size(150);
 
     group.bench_function("Verify Message", |b| b.iter(||
         receiver::check_message(
@@ -123,7 +118,7 @@ pub fn criterion_benchmark_receiver(c: &mut Criterion) {
 pub fn criterion_benchmark_platform(c: &mut Criterion) {
     let test = generate_test_parameters();
     let mut group = c.benchmark_group("Platform");
-    group.significance_level(0.1).sample_size(100);
+    group.significance_level(0.1).sample_size(150);
 
     group.bench_function("Sign and Timestamp ", |b| b.iter(||
         platform::sign_com(
