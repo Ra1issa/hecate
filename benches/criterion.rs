@@ -45,11 +45,17 @@ pub fn criterion_benchmark_moderator(c: &mut Criterion) {
     let mut group = c.benchmark_group("Moderator");
     group.significance_level(0.1).sample_size(300);
 
-    let max_time = Duration::from_secs(1000);
-    group.measurement_time(max_time);
 
     let batch_sizes = [1, 10, 100, 1000, 10000];
     for i in 0..batch_sizes.len(){
+        if batch_sizes[i] == 1000 {
+            let max_time = Duration::from_secs(100);
+            group.measurement_time(max_time);
+        }else if batch_sizes[i] == 10000 {
+            let max_time = Duration::from_secs(900);
+            group.measurement_time(max_time);
+        }
+
         let test_name = format!{"Moderator :: Generate {:?} tokens", batch_sizes[i].to_string()};
         group.bench_function(test_name, |b| b.iter(||
             moderator::generate_batch(
@@ -74,9 +80,6 @@ pub fn criterion_benchmark_sender(c: &mut Criterion) {
     let test = generate_test_parameters();
     let mut group = c.benchmark_group("Sender");
     group.significance_level(0.1).sample_size(300);
-
-    let max_time = Duration::from_secs(1000);
-    group.measurement_time(max_time);
 
     static B: usize = 1;
     static KB: usize = 1024;
