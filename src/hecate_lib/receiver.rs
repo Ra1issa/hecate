@@ -1,6 +1,6 @@
 use crate::hecate_lib::{
     utils,
-    types::{Mfrank, Envelope},
+    types::{Mfrank, Envelope, Report},
 };
 use poksho;
 use libsignal_protocol::crypto;
@@ -12,11 +12,13 @@ use sha2::{Sha256, Digest};
 use std::convert::TryInto;
 
 pub fn check_message(
-    mf: Mfrank,
-    env: Envelope,
+    mfrank: Mfrank,
+    envelope: Envelope,
     mod_pk: RistrettoPoint,
     plat_pk: RistrettoPoint,
-)-> bool{
+)-> Report{
+    let mf = mfrank.clone();
+    let env = envelope.clone();
 
     // Concatenate moderator token
     let s = [mf.x1.clone(), mf.nonce.clone(), mf.pke.clone(), mf.time.clone()].concat();
@@ -46,7 +48,10 @@ pub fn check_message(
     // Verify Time
     let time_mod = i64::from_le_bytes(mf.time.try_into().unwrap());
     let time_plat = i64::from_le_bytes(env.time.try_into().unwrap());
-    println!("timestamp diff {:?}", time_plat - time_mod);
+    // println!("timestamp diff {:?}", time_plat - time_mod);
 
-    return true;
+    Report{
+        mfrank,
+        envelope,
+    }
 }

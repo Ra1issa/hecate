@@ -11,7 +11,7 @@ use std::{
     io::Write
 };
 
-pub fn verify_message()-> Report{
+pub fn verify_message()-> Report {
     let mut buff_mfrank = Vec::new();
     let mfrank = utils::read_from_file::<Mfrank>("mfrank.txt",&mut buff_mfrank);
 
@@ -24,11 +24,8 @@ pub fn verify_message()-> Report{
     let mut buff_env = Vec::new();
     let envelope = utils::read_from_file::<Envelope>("envelope.txt",&mut buff_env);
 
-    let _b = receiver::check_message(mfrank.clone(), envelope.clone(), mod_pk, plat_pk);
-    Report{
-        mfrank,
-        envelope,
-    }
+    let report = receiver::check_message(mfrank.clone(), envelope.clone(), mod_pk, plat_pk);
+    report
 }
 
 pub fn report(report: Report){

@@ -1,22 +1,10 @@
 use crate::hecate_lib::{
     utils,
-    types::Envelope,
+    types::{Envelope, Platform},
 };
 
 use poksho;
-
-use curve25519_dalek::{
-    scalar::Scalar,
-    ristretto::RistrettoPoint,
-};
 use chrono::Utc;
-use serde::{Serialize, Deserialize};
-
-#[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct Platform{
-    sig_sk: Scalar,
-    pub sig_pk: RistrettoPoint,
-}
 
 pub fn setup_platform() -> Platform{
     let (sig_sk, sig_pk) = utils::generate_keys();

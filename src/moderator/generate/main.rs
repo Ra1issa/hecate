@@ -1,7 +1,7 @@
 use hecate::hecate_lib::{
     moderator,
     utils,
-    types::Token,
+    types::{Moderator, Token},
 };
 use curve25519_dalek::ristretto::RistrettoPoint;
 use std::{
@@ -9,11 +9,14 @@ use std::{
         TcpListener,
         TcpStream,
     },
-    io::Write
+    io::Write,
+    time::SystemTime,
 };
 
-fn send_tokens(id: Vec<u8>, m: moderator::Moderator, stream: &mut TcpStream){
+fn send_tokens(id: Vec<u8>, m: Moderator, stream: &mut TcpStream){
+    let start = SystemTime::now();
     let tk = moderator::generate_token(id.clone(), m.clone());
+    let _t = start.elapsed().unwrap();
     let tk_bytes = bincode::serialize(&tk).unwrap();
 
     let _ = stream.write_all(&tk_bytes);
@@ -22,11 +25,14 @@ fn send_tokens(id: Vec<u8>, m: moderator::Moderator, stream: &mut TcpStream){
 }
 
 fn main(){
-    let id = utils::random_block(32);
-    let m = moderator::setup_moderator();
+    let mut buff_id = Vec::new();
+    let id = utils::read_from_file::<Vec<u8>>("user_id.txt",&mut buff_id);
+
+    let mut buff_m = Vec::new();
+    let m = utils::read_from_file::<Moderator>("mod_keys.txt",&mut buff_m);
 
     println!("User id {:?}", id);
-    utils::write_to_file::<moderator::Moderator>(m.clone(), "mod_keys.txt");
+    utils::write_to_file::<Moderator>(m.clone(), "mod_keys.txt");
     utils::write_to_file::<RistrettoPoint>(m.sig_pk, "mod_pk.txt");
 
     let address = "127.0.0.1:3000";

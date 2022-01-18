@@ -3,11 +3,13 @@ use hecate::hecate_lib::{
     utils,
     types::{Mfrank, Token},
 };
-use std::env;
+use std::{env,fs};
 
 fn main(){
-    let args: Vec<String> = env::args().collect();
-    let msg = &args[1];
+    // let args: Vec<String> = env::args().collect();
+    let mut path = utils::get_project_path();
+    path.push("data/msgs/message1.txt");
+    let msg: String= fs::read_to_string(path).unwrap();
 
     let mut buff = Vec::new();
     let tk = utils::read_from_file::<Token>("token.txt",&mut buff);

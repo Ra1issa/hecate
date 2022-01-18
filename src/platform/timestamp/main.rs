@@ -1,15 +1,12 @@
 use hecate::hecate_lib::{
     platform,
     utils,
-    types::Envelope,
+    types::{Platform, Envelope},
 };
-use curve25519_dalek::ristretto::RistrettoPoint;
 
 fn main(){
-
-    let p = platform::setup_platform();
-    utils::write_to_file::<platform::Platform>(p.clone(), "plat_keys.txt");
-    utils::write_to_file::<RistrettoPoint>(p.sig_pk, "plat_pk.txt");
+    let mut buff_p = Vec::new();
+    let p = utils::read_from_file::<Platform>("plat_keys.txt",&mut buff_p);
 
     let mut buff = Vec::new();
     let com = utils::read_from_file::<Vec<u8>>("commitment.txt",&mut buff);

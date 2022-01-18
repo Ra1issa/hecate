@@ -1,7 +1,7 @@
 use crate::hecate_lib::{
     utils,
     receiver::check_message,
-    types::{Token, Trace, Report},
+    types::{Moderator, Token, Trace, Report},
 };
 
 use poksho;
@@ -12,18 +12,9 @@ use signal_crypto::{
 };
 
 use curve25519_dalek::{
-    scalar::Scalar,
     ristretto::RistrettoPoint,
 };
 use chrono::Utc;
-use serde::{Serialize, Deserialize};
-
-#[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct Moderator{
-    enc_sk: Vec<u8>,
-    sig_sk: Scalar,
-    pub sig_pk: RistrettoPoint,
-}
 
 pub fn setup_moderator() -> Moderator{
     let (sig_sk, sig_pk) = utils::generate_keys();
@@ -41,7 +32,6 @@ pub fn generate_token
     id: Vec<u8>,
     m: Moderator,
 ) -> Token {
-
     let randomness = utils::random_block(32);
     let nonce = utils::random_block(12);
     let aad = "".as_bytes();
@@ -56,10 +46,8 @@ pub fn generate_token
     let dt = Utc::now();
     let time = dt.timestamp().to_le_bytes().to_vec();
 
-    // Generate ephemeral keys
-    let (ske, pke) = utils::generate_keys();
-
     // Compress RistrettoPt and cast it to the bytes
+    let (ske, pke) = utils::generate_keys();
     let pke = pke.compress();
     let pke = pke.as_bytes().to_vec();
 
@@ -88,8 +76,7 @@ pub fn inspect(
 ) -> Trace {
     let aad = "".as_bytes();
 
-    let b = check_message(report.mfrank.clone(), report.envelope.clone(), m.sig_pk, plat_pk);
-    assert_eq!(b, true);
+    let _ = check_message(report.mfrank.clone(), report.envelope.clone(), m.sig_pk, plat_pk);
 
     let mut buf = report.mfrank.x1.clone();
     let mut gcm_dec = Aes256GcmDecryption::new(&m.enc_sk, &report.mfrank.nonce, &aad).unwrap();

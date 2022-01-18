@@ -75,18 +75,16 @@ where
     path.push("data");
     path.push(file_name);
     let path_str = path.clone().into_os_string().into_string().unwrap();
-
     let mut file = File::open(path_str).unwrap();
     file.read_to_end(buff).unwrap();
     let msg: T = bincode::deserialize(buff).unwrap();
     return msg;
 }
 
-
 pub fn get_project_path() -> PathBuf{
-    let mut path = env::current_exe().unwrap();
-    path.pop();
-    path.pop();
-    path.pop();
+    let path = env::current_exe().unwrap();
+    let path_str = path.clone().into_os_string().into_string().unwrap();
+    let path_split = path_str.split_inclusive("hecate").collect::<Vec<&str>>();
+    let path = PathBuf::from(path_split[0]);
     return path;
 }

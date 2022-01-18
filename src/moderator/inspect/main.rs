@@ -1,7 +1,7 @@
 use hecate::hecate_lib::{
-    moderator::{Moderator, inspect},
+    moderator,
     utils,
-    types::{Report, Trace},
+    types::{Moderator, Report, Trace},
 };
 use curve25519_dalek::ristretto::RistrettoPoint;
 use std::{
@@ -25,18 +25,13 @@ pub fn receive_report() -> Report{
 }
 
 pub fn verify_message(report: Report) -> Trace{
-    // let mut buff_mfrank = Vec::new();
-    // let mfrank = utils::read_from_file::<Mfrank>("mfrank.txt",&mut buff_mfrank);
-    // let mut buff_env = Vec::new();
-    // let envelope = utils::read_from_file::<Envelope>("envelope.txt",&mut buff_env);
-
     let mut buff_pk = Vec::new();
     let moderator = utils::read_from_file::<Moderator>("mod_keys.txt",&mut buff_pk);
 
     let mut buff_pk = Vec::new();
     let plat_pk = utils::read_from_file::<RistrettoPoint>("plat_pk.txt",&mut buff_pk);
 
-    inspect(report, moderator, plat_pk)
+    moderator::inspect(report, moderator, plat_pk)
 }
 
 fn main(){
