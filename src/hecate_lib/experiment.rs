@@ -25,6 +25,14 @@ pub fn inject_envelope_com(ctext: &[u8]) -> Vec<u8>{
     [ctext, &e].concat()
 }
 
+
+pub fn remove_envelope_com(ctext: &[u8]) -> Vec<u8>{
+    println!("Removing envelope");
+    let c_len = ctext.len();
+    let pad_len = ENVELOPE_SIZE % 16;
+    ctext[0..c_len-(ENVELOPE_SIZE+pad_len)].to_vec()
+}
+
 pub fn inject_mfrank(ptext: &[u8]) -> Vec<u8>{
     let id = utils::random_block(32);
     let m = moderator::setup_moderator();
