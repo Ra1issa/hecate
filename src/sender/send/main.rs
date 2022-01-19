@@ -3,7 +3,7 @@ use hecate::hecate_lib::{
     utils,
     types::{Mfrank, Token},
 };
-use std::{env,fs};
+use std::fs;
 
 fn main(){
     // let args: Vec<String> = env::args().collect();

@@ -9,10 +9,9 @@ use rand_core::OsRng;
 use std::{
     fs::{create_dir_all, File},
     io::{Read, Write},
-    path::PathBuf,
+    path::{PathBuf, Component},
 };
 use serde::{Serialize, Deserialize};
-use project_root;
 
 pub fn random_block(size: u8) -> Vec<u8>{
     let mut block = Vec::new();
@@ -79,7 +78,8 @@ where
 }
 
 pub fn get_data_path() -> PathBuf{
-    let mut path = project_root::get_project_root().unwrap();
+    let root_dir = Component::RootDir.as_os_str().to_str().unwrap();
+    let mut path = PathBuf::from(root_dir);
     path.pop();
     path.push("hecate/data");
     create_dir_all(path.clone()).unwrap();
