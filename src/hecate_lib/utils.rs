@@ -81,7 +81,7 @@ pub fn get_data_path() -> PathBuf{
     let root_dir = Component::RootDir.as_os_str().to_str().unwrap();
     let mut path = PathBuf::from(root_dir);
     path.pop();
-    path.push("hecate/data");
+    path.push("Documents/hecate/data");
     create_dir_all(path.clone()).unwrap();
     PathBuf::from(path)
 }
