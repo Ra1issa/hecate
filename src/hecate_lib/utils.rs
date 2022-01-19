@@ -7,13 +7,12 @@ use rand::Rng;
 use rand_core::OsRng;
 
 use std::{
-    env,
-    fs::File,
+    fs::{create_dir_all, File},
     io::{Read, Write},
     path::PathBuf,
 };
 use serde::{Serialize, Deserialize};
-
+use project_root;
 
 pub fn random_block(size: u8) -> Vec<u8>{
     let mut block = Vec::new();
@@ -54,8 +53,7 @@ pub fn write_to_file<'a, T: Serialize>
 ){
     let data = bincode::serialize(&data).unwrap();
 
-    let mut path = get_project_path();
-    path.push("data");
+    let mut path = get_data_path();
     path.push(file_name);
     let path_str = path.clone().into_os_string().into_string().unwrap();
 
@@ -71,8 +69,7 @@ pub fn read_from_file<'a, T>
 where
     T:  Deserialize<'a>
 {
-    let mut path = get_project_path();
-    path.push("data");
+    let mut path = get_data_path();
     path.push(file_name);
     let path_str = path.clone().into_os_string().into_string().unwrap();
     let mut file = File::open(path_str).unwrap();
@@ -81,10 +78,10 @@ where
     return msg;
 }
 
-pub fn get_project_path() -> PathBuf{
-    let path = env::current_exe().unwrap();
-    let path_str = path.clone().into_os_string().into_string().unwrap();
-    let path_split = path_str.split_inclusive("hecate").collect::<Vec<&str>>();
-    let path = PathBuf::from(path_split[0]);
-    return path;
+pub fn get_data_path() -> PathBuf{
+    let mut path = project_root::get_project_root().unwrap();
+    path.pop();
+    path.push("hecate/data");
+    create_dir_all(path.clone()).unwrap();
+    PathBuf::from(path)
 }

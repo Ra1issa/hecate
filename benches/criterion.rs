@@ -11,8 +11,8 @@ use std::fs;
 use core::time::Duration;
 
 pub fn generate_test_parameters()-> Test {
-    let mut path = utils::get_project_path();
-    path.push("data/msgs/message1.txt");
+    let mut path = utils::get_data_path();
+    path.push("msgs/message1.txt");
     let msg: String= fs::read_to_string(path).unwrap();
 
     let id = utils::random_block(32);
@@ -84,8 +84,8 @@ pub fn criterion_benchmark_sender(c: &mut Criterion) {
 
     let msg_sizes = [10 * B, 100 * B, KB, 10 * KB, 100 * KB];
     for i in 0..4 as usize{
-        let mut path = utils::get_project_path();
-        let file = format!{"data/msgs/message{:?}.txt", i};
+        let mut path = utils::get_data_path();
+        let file = format!{"msgs/message{:?}.txt", i};
         path.push(file);
 
         let msg: String= fs::read_to_string(path).unwrap();

@@ -46,8 +46,8 @@ pub fn check_message(
     assert_eq!(h, hash.to_vec());
 
     // Verify Time
-    let time_mod = i64::from_le_bytes(mf.time.try_into().unwrap());
-    let time_plat = i64::from_le_bytes(env.time.try_into().unwrap());
+    let _time_mod = i64::from_le_bytes(mf.time.try_into().unwrap());
+    let _time_plat = i64::from_le_bytes(env.time.try_into().unwrap());
     // println!("timestamp diff {:?}", time_plat - time_mod);
 
     Report{

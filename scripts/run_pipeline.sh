@@ -29,9 +29,9 @@ echo "****************************"
 echo "****************************"
 echo "Receiver :: Verify Message"
 cargo run --release --bin receiver &
-sleep 5s
+sleep 1s
 
 echo "****************************"
 echo "****************************"
-echo "Moderaotr :: Verify Message and Trace"
+echo "Moderator :: Verify Message and Trace"
 cargo run --release --bin moderator_inspect

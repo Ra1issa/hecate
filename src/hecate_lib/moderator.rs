@@ -74,7 +74,7 @@ pub fn generate_batch(
     m: Moderator,
 )-> Vec<Token>{
     let mut batch: Vec<Token> = Vec::new();
-    for i in 0..batch_size{
+    for _i in 0..batch_size{
         batch.push(generate_token(id.clone(), m.clone()));
     }
     batch
