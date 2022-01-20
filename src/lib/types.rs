@@ -46,13 +46,6 @@ pub struct Envelope{
     pub time: Vec<u8>,
 }
 
-// The Signal Server already appends a timestamp
-#[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct EnvelopeExtension{
-    pub com: Vec<u8>,
-    pub sig: Vec<u8>,
-}
-
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Report{
     pub mfrank: Mfrank,

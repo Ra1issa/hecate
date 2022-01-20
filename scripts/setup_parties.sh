@@ -1,3 +1,5 @@
+mkdir -p ~/Documents/hecate/data
+
 echo "****************************"
 echo "****************************"
 echo "Moderator :: Setup"

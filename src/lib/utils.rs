@@ -13,6 +13,7 @@ use std::{
     path::{PathBuf},
 };
 use serde::{Serialize, Deserialize};
+use shellexpand;
 
 pub fn random_block(size: u8) -> Vec<u8>{
     let mut block = Vec::new();
@@ -79,12 +80,9 @@ where
 }
 
 pub fn get_data_path() -> PathBuf{
-    let mut path = PathBuf::from("/home");
-    let path_test = env::current_exe().unwrap();
-    let mut path_comp = path_test.components();
-    let pc_name = path_comp.nth(2).unwrap();
-    path.push(pc_name);
-    path.push("Documents/hecate/data");
+    let root_dir = shellexpand::tilde("~/Documents/hecate/data").to_string();
+    let path = PathBuf::from(root_dir);
+    // For some reason doesn't behave properly with java
     create_dir_all(path.clone()).unwrap();
-    PathBuf::from(path)
+    path
 }

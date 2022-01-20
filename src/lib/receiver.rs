@@ -11,6 +11,10 @@ use curve25519_dalek::ristretto::{
 use sha2::{Sha256, Digest};
 use std::convert::TryInto;
 
+pub fn check_mfrank(){
+
+}
+
 pub fn check_message(
     mfrank: Mfrank,
     envelope: Envelope,
