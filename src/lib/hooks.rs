@@ -28,20 +28,6 @@ pub fn inject_envelope_com(ctext: &[u8]) -> Vec<u8>{
     [ctext, &e].concat()
 }
 
-
-pub fn remove_envelope_com(ctext: &[u8]) -> Vec<u8>{
-    println!("Removing envelope");
-    let c_len = ctext.len();
-    let pad_len = ENVELOPE_SIZE%16;
-    let mut env_bytes = ctext[c_len-ENVELOPE_SIZE-pad_len..c_len].to_vec();
-    for _ in 0..pad_len {
-        env_bytes.pop();
-    }
-    let envelope: Envelope = bincode::deserialize(&env_bytes).unwrap();
-    utils::write_to_file::<Envelope>(envelope, "envelope.txt");
-    ctext[0..c_len-ENVELOPE_SIZE].to_vec()
-}
-
 pub fn inject_mfrank(ptext: String) -> Vec<u8>{
     println!("Adding Mfrank");
 
@@ -55,6 +41,19 @@ pub fn inject_mfrank(ptext: String) -> Vec<u8>{
     utils::write_to_file::<Vec<u8>>(com, "commitment.txt");
 
     mfrank
+}
+
+pub fn remove_envelope_com(ctext: &[u8]) -> Vec<u8>{
+    println!("Removing envelope");
+    let c_len = ctext.len();
+    let pad_len = ENVELOPE_SIZE%16;
+    let mut env_bytes = ctext[c_len-ENVELOPE_SIZE-pad_len..c_len].to_vec();
+    for _ in 0..pad_len {
+        env_bytes.pop();
+    }
+    let envelope: Envelope = bincode::deserialize(&env_bytes).unwrap();
+    utils::write_to_file::<Envelope>(envelope, "envelope.txt");
+    ctext[0..c_len-ENVELOPE_SIZE-pad_len].to_vec()
 }
 
 pub fn remove_mfrank(mfrank_bytes: &[u8]) -> String{
