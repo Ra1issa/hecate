@@ -1,4 +1,4 @@
-use crate::hecate_lib::{
+use crate::{
     utils,
     receiver::check_message,
     types::{Moderator, Token, Trace, Report},

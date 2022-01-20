@@ -27,6 +27,10 @@ poksho = {git = "https://github.com/Ra1issa/libsignal-client"}
 [profile.dev.package.num-bigint-dig]
 opt-level = 3 # too slow otherwise!
 
+[lib]
+name = "hecate"
+path = "src/lib/lib.rs"
+
 [[bench]]
 name = "criterion"
 harness = false

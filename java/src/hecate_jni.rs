@@ -1,8 +1,6 @@
-use hecate::hecate_lib::{
-    hooks::{
-        inject_mfrank,
-        remove_mfrank,
-    },
+use hecate::hooks::{
+    inject_mfrank,
+    remove_mfrank,
 };
 
 use bincode;
@@ -25,7 +23,7 @@ pub fn Java_org_Hecate_inject_1mfrank_1jni(
     for i in 0..len{
         res_encoded.push(result[i] as u16);
     }
-    
+
     let output = env.new_char_array(len as i32).unwrap();
     env.set_char_array_region(output, 0, &res_encoded).unwrap();
     output

@@ -1,4 +1,4 @@
-use crate::hecate_lib::{
+use crate::{
     utils,
     types::{Mfrank, Envelope, Report},
 };

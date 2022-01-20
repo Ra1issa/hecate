@@ -1,4 +1,4 @@
-use hecate::hecate_lib::{
+use hecate::{
     platform,
     utils,
     types::Platform,

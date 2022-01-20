@@ -1,4 +1,4 @@
-use hecate::hecate_lib::{
+use hecate::{
     sender,
     utils,
     types::{Mfrank, Token},

@@ -1,4 +1,4 @@
-use hecate::hecate_lib::{
+use hecate::{
     receiver,
     utils,
     types::{Envelope, Mfrank, Report},

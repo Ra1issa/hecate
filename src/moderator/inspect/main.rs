@@ -1,4 +1,4 @@
-use hecate::hecate_lib::{
+use hecate::{
     moderator,
     utils,
     types::{Moderator, Report, Trace},
