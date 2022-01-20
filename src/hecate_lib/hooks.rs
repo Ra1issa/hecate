@@ -5,7 +5,6 @@ use crate::hecate_lib::{
     utils,
     types::Mfrank,
 };
-use std::str;
 
 const ENVELOPE_SIZE: usize = 128;
 
@@ -33,20 +32,21 @@ pub fn remove_envelope_com(ctext: &[u8]) -> Vec<u8>{
     ctext[0..c_len-(ENVELOPE_SIZE+pad_len)].to_vec()
 }
 
-pub fn inject_mfrank(ptext: &[u8]) -> Vec<u8>{
+pub fn inject_mfrank(ptext: String) -> Vec<u8>{
+    println!("Adding Mfrank");
     let id = utils::random_block(32);
     let m = moderator::setup_moderator();
 
     let tk = moderator::generate_token(id.clone(), m.clone());
-    let p_str = str::from_utf8(ptext).unwrap().to_string();
-    let (mf, com) = sender::generate_frank(p_str, tk);
+    let (mf, com) = sender::generate_frank(ptext, tk);
     let mfrank = bincode::serialize(&mf).unwrap().to_vec();
     utils::write_to_file::<Vec<u8>>(com, "commitment.txt");
 
     mfrank
 }
 
-pub fn remove_mfrank(mfrank_bytes: &[u8]) -> Vec<u8>{
+pub fn remove_mfrank(mfrank_bytes: &[u8]) -> String{
+    println!("Removing Mfrank");
     let mfrank : Mfrank = bincode::deserialize(mfrank_bytes).unwrap();
-    mfrank.msg.as_bytes().to_vec()
+    mfrank.msg
 }

@@ -7,7 +7,7 @@ use rand::Rng;
 use rand_core::OsRng;
 
 use std::{
-    env,
+    // env,
     fs::{create_dir_all, File},
     io::{Read, Write},
     path::PathBuf,
@@ -79,11 +79,7 @@ where
 }
 
 pub fn get_data_path() -> PathBuf{
-    let mut path = env::current_exe().unwrap();
-    path.pop();
-    path.pop();
-    path.push("/hecate/data");
-    println!(" PATH {:?}", path);
+    let path = PathBuf::from("/home/petitpenguin/Documents/hecate/data");
     create_dir_all(path.clone()).unwrap();
     PathBuf::from(path)
 }
