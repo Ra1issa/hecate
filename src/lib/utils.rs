@@ -7,10 +7,10 @@ use rand::Rng;
 use rand_core::OsRng;
 
 use std::{
-    // env,
+    env,
     fs::{create_dir_all, File},
     io::{Read, Write},
-    path::PathBuf,
+    path::{PathBuf},
 };
 use serde::{Serialize, Deserialize};
 
@@ -79,7 +79,12 @@ where
 }
 
 pub fn get_data_path() -> PathBuf{
-    let path = PathBuf::from("/home/petitpenguin/Documents/hecate/data");
+    let mut path = PathBuf::from("/home");
+    let path_test = env::current_exe().unwrap();
+    let mut path_comp = path_test.components();
+    let pc_name = path_comp.nth(2).unwrap();
+    path.push(pc_name);
+    path.push("Documents/hecate/data");
     create_dir_all(path.clone()).unwrap();
     PathBuf::from(path)
 }

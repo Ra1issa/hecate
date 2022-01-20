@@ -28,7 +28,7 @@ pub fn verify_message()-> Report {
     report
 }
 
-pub fn report(report: Report){
+pub fn connect_report(report: Report){
     let address = "127.0.0.1:3000";
     let listener = TcpListener::bind(address).unwrap();
     println!("Server listening on port 3000");
@@ -37,7 +37,6 @@ pub fn report(report: Report){
         match stream {
             Ok(mut stream) => {
                 println!("New connection: {}", stream.peer_addr().unwrap());
-
                 let report_bytes = bincode::serialize(&report).unwrap();
                 let _ = stream.write_all(&report_bytes);
                 let _ = stream.flush();
@@ -52,6 +51,7 @@ pub fn report(report: Report){
 }
 
 fn main(){
-    let rep = verify_message();
-    report(rep);
+    let report = verify_message();
+    utils::write_to_file::<Report>(report, "report.txt");
+    // connect_report(rep);
 }

@@ -4,7 +4,6 @@ use hecate::{
     types:: Moderator,
 };
 
-
 fn main(){
     let id = utils::random_block(32);
     let m = moderator::setup_moderator();

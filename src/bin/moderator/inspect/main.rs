@@ -36,7 +36,9 @@ pub fn verify_message(report: Report) -> Trace{
 
 fn main(){
 
-    let report = receive_report();
+    let mut buff_report = Vec::new();
+    let report = utils::read_from_file::<Report>("report.txt",&mut buff_report);
+    // let report = receive_report();
     let trace = verify_message(report);
     println!("Reported id {:?}", trace.id);
     println!("Time diff {:?}", trace.time_diff);

@@ -8,7 +8,6 @@ use std::{
     // time::SystemTime,
 };
 
-
 pub fn fetch_tokens(stream: &mut TcpStream){
     let mut reader = BufReader::new(stream);
     let tk_bytes: Token =  bincode::deserialize(reader.fill_buf().unwrap()).unwrap();

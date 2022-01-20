@@ -15,6 +15,7 @@ use curve25519_dalek::{
     ristretto::RistrettoPoint,
 };
 use chrono::Utc;
+use std::convert::TryInto;
 
 pub fn setup_moderator() -> Moderator{
     let (sig_sk, sig_pk) = utils::generate_keys();
@@ -93,10 +94,12 @@ pub fn inspect(
     let mut buf = report.mfrank.x1.clone();
     let mut gcm_dec = Aes256GcmDecryption::new(&m.enc_sk, &report.mfrank.nonce, &aad).unwrap();
     gcm_dec.decrypt(&mut buf).unwrap();
+    let time_mod = i64::from_le_bytes(report.mfrank.time.try_into().unwrap());
+    let time_plat = i64::from_le_bytes(report.envelope.time.try_into().unwrap());
 
     Trace{
         id: buf.to_vec(),
         msg: report.mfrank.msg,
-        time_diff: 0 as i64,
+        time_diff:time_plat-time_mod,
     }
 }

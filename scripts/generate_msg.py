@@ -1,16 +1,22 @@
 import os
+from pathlib import Path
+from shutil import copyfile
 
 file_sizes = [10, 100, 1000, 10000, 100000]
 
-# os.chdir(os.pardir)
+# using path.expanduser() getting username
+dir = os.path.expanduser('~') + '/Documents/hecate/data'
 
-text_file = open("../data/msgs/lorem.txt", "r")
+Path(dir+"/msgs/").mkdir(parents=True, exist_ok=True)
+copyfile("../data/msgs/lorem.txt", dir+"/msgs/lorem.txt")
+
+text_file = open(dir+"/msgs/lorem.txt", "r")
 lorem = text_file.read()
 text_file.close()
 
 for i in range(len(file_sizes)):
     file_name = "message"+str(i)+".txt";
-    path = "../data/msgs/"+file_name;
+    path = dir+"/msgs/"+file_name;
     f = open(path, "w+")
     f.write(lorem[0:file_sizes[i]])
     f.close()

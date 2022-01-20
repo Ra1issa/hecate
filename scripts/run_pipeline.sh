@@ -5,15 +5,16 @@ pkill -f receiver
 pkill -f moderator_inspect
 
 message=Hello
+
 echo "****************************"
 echo "****************************"
 echo "Moderator :: Generate Tokens"
-cargo run --release --bin moderator_generate &
-sleep 1s
-echo "****************************"
-echo "****************************"
-echo "Sender :: Fetch Tokens"
-cargo run --release --bin sender_fetch
+cargo run --release --bin moderator_generate
+# sleep 1s
+# echo "****************************"
+# echo "****************************"
+# echo "Sender :: Fetch Tokens"
+# cargo run --release --bin sender_fetch
 
 echo "****************************"
 echo "****************************"
@@ -23,15 +24,16 @@ cargo run --release --bin sender_send $message
 echo "****************************"
 echo "****************************"
 echo "Platform :: Timestamp and Sign"
-cargo run --release --bin platform
+cargo run --release --bin platform_timestamp
 
 echo "****************************"
 echo "****************************"
 echo "Receiver :: Verify Message"
-cargo run --release --bin receiver &
-sleep 1s
+cargo run --release --bin receiver
 
 echo "****************************"
 echo "****************************"
 echo "Moderator :: Verify Message and Trace"
 cargo run --release --bin moderator_inspect
+echo "****************************"
+echo "****************************"
