@@ -37,32 +37,32 @@ harness = false
 
 [[bin]]
 name = "sender_send"
-path = "src/sender/send/main.rs"
+path = "src/bin/sender/send/main.rs"
 
 [[bin]]
 name = "sender_fetch"
-path = "src/sender/fetch_tokens/main.rs"
+path = "src/bin/sender/fetch_tokens/main.rs"
 
 [[bin]]
 name = "receiver"
-path = "src/receiver/main.rs"
+path = "src/bin/receiver/main.rs"
 
 [[bin]]
 name = "platform_timestamp"
-path = "src/platform/timestamp/main.rs"
+path = "src/bin/platform/timestamp/main.rs"
 
 [[bin]]
 name = "platform_setup"
-path = "src/platform/setup/main.rs"
+path = "src/bin/platform/setup/main.rs"
 
 [[bin]]
 name = "moderator_generate"
-path = "src/moderator/generate/main.rs"
+path = "src/bin/moderator/generate/main.rs"
 
 [[bin]]
 name = "moderator_inspect"
-path = "src/moderator/inspect/main.rs"
+path = "src/bin/moderator/inspect/main.rs"
 
 [[bin]]
 name = "moderator_setup"
-path = "src/moderator/setup/main.rs"
+path = "src/bin/moderator/setup/main.rs"
