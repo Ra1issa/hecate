@@ -35,24 +35,24 @@ pub fn inject_envelope_com(ctext: &[u8]) -> Vec<u8>{
     let env = platform::sign_com(com.clone(), p.clone());
 
     let e = bincode::serialize(&env).unwrap().to_vec();
-    println!("e size {:?}", e.len());
-    println!("ctext size {:?}", ctext.len());
     [ctext, &e].concat()
 }
 
 pub fn remove_envelope_com(ctext: &[u8]) -> Vec<u8>{
     println!("Removing envelope");
-    println!("ctext {:?}", ctext.len());
     let c_len = ctext.len();
     let mut env_bytes = ctext[c_len-ENVELOPE_SIZE..c_len].to_vec();
-    let envelope: Envelope = bincode::deserialize(&env_bytes).unwrap();
-    utils::write_to_file::<Envelope>(envelope, "envelope.txt");
+    // Temporary: When the cipher is small, its not the actual message
+    // Its the ack
+    if c_len > 300 {
+        let envelope: Envelope = bincode::deserialize(&env_bytes).unwrap();
+        utils::write_to_file::<Envelope>(envelope, "envelope.txt");
+    }
     ctext[0..c_len-ENVELOPE_SIZE].to_vec()
 }
 
 pub fn remove_mfrank(mfrank_bytes: &[u8]) -> String{
     println!("Removing Mfrank");
-    println!("Mfrank size {:?}", mfrank_bytes.len());
     let mut buff_pk = Vec::new();
     let mod_pk = utils::read_from_file::<RistrettoPoint>("mod_pk.txt",&mut buff_pk);
 
