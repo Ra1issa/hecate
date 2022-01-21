@@ -5,3 +5,4 @@ pub mod sender;
 pub mod utils;
 pub mod types;
 pub mod hooks;
+pub mod tests;

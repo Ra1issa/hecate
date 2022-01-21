@@ -52,7 +52,6 @@ pub fn write_to_file<'a, T: Serialize>
     file_name: &str
 ){
     let data = bincode::serialize(&data).unwrap();
-
     let mut path = get_data_path();
     path.push(file_name);
     let path_str = path.clone().into_os_string().into_string().unwrap();

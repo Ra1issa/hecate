@@ -5,10 +5,6 @@ use hecate::{
 };
 
 
-pub fn connect_timestamp(){
-    
-}
-
 fn main(){
     let mut buff_p = Vec::new();
     let p = utils::read_from_file::<Platform>("plat_keys.txt",&mut buff_p);

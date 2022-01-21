@@ -37,11 +37,9 @@ pub fn connect_send(id: Vec<u8>, m: Moderator){
 fn main(){
     let mut buff_id = Vec::new();
     let id = utils::read_from_file::<Vec<u8>>("user_id.txt",&mut buff_id);
-
     let mut buff_m = Vec::new();
     let m = utils::read_from_file::<Moderator>("mod_keys.txt",&mut buff_m);
-
-    utils::write_to_file::<Moderator>(m.clone(), "mod_keys.txt");
+    
     utils::write_to_file::<RistrettoPoint>(m.sig_pk, "mod_pk.txt");
 
     // let _ = connect_send(id, m);
