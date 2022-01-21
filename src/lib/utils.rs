@@ -7,7 +7,6 @@ use rand::Rng;
 use rand_core::OsRng;
 
 use std::{
-    env,
     fs::{create_dir_all, File},
     io::{Read, Write},
     path::{PathBuf},
