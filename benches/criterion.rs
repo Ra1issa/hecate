@@ -95,13 +95,13 @@ pub fn criterion_benchmark_sender(c: &mut Criterion) {
     static KB: usize = 1000;
 
     let msg_sizes = [10 * B, 100 * B, KB, 10 * KB, 100 * KB];
-    for i in 0..1 as usize{
+    for i in 0..4 as usize{
         let mut path = utils::get_data_path();
-        let file = format!{"msgs/message{:?}.txt", 2};
+        let file = format!{"msgs/message{:?}.txt", i};
         path.push(file);
 
         let msg: String= fs::read_to_string(path).unwrap();
-        let test_name = format!{"Frank :: Plaintext Size {:?}B", msg_sizes[2].to_string()};
+        let test_name = format!{"Frank :: Plaintext Size {:?}B", msg_sizes[i].to_string()};
         group.bench_function(test_name, |b| b.iter(||
             sender::generate_frank(
                 black_box(msg.clone()),
