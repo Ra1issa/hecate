@@ -3,28 +3,31 @@ use hecate::{
     utils,
     types::{Envelope, Mfrank, Report},
 };
-use curve25519_dalek::ristretto::RistrettoPoint;
 use std::{
     net::{
         TcpListener,
     },
     io::Write
 };
+use ed25519_dalek::PublicKey;
 
 pub fn verify_message()-> Report {
     let mut buff_mfrank = Vec::new();
     let mfrank = utils::read_from_file::<Mfrank>("mfrank.txt",&mut buff_mfrank);
 
     let mut buff_pk = Vec::new();
-    let mod_pk = utils::read_from_file::<RistrettoPoint>("mod_pk.txt",&mut buff_pk);
+    let mod_pk = utils::read_from_file::<Vec<u8>>("mod_pk.txt",&mut buff_pk);
+    let mod_pk = PublicKey::from_bytes(&mod_pk).unwrap();
 
     let mut buff_pk = Vec::new();
-    let plat_pk = utils::read_from_file::<RistrettoPoint>("plat_pk.txt",&mut buff_pk);
+    let plat_pk = utils::read_from_file::<Vec<u8>>("plat_pk.txt",&mut buff_pk);
+    let plat_pk = PublicKey::from_bytes(&plat_pk).unwrap();
 
     let mut buff_env = Vec::new();
     let envelope = utils::read_from_file::<Envelope>("envelope.txt",&mut buff_env);
 
     let report = receiver::check_message(mfrank.clone(), envelope.clone(), mod_pk, plat_pk);
+
     report
 }
 

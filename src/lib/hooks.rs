@@ -7,12 +7,12 @@ use crate::{
     tests,
     types::{Platform, Moderator, Mfrank, Envelope},
 };
-use curve25519_dalek::ristretto::RistrettoPoint;
+use ed25519_dalek::PublicKey;
 
 const ENVELOPE_SIZE: usize = 128;
 
 pub fn inject_mfrank(ptext: String) -> Vec<u8>{
-
+    println!("Adding Mfrank");
     // let id = utils::random_block(32);
     // let mut buff_m = Vec::new();
     // let m = utils::read_from_file::<Moderator>("mod_keys.txt",&mut buff_m);
@@ -20,11 +20,11 @@ pub fn inject_mfrank(ptext: String) -> Vec<u8>{
     let id = tests::ID.to_vec();
     let m: Moderator = bincode::deserialize(tests::MOD).unwrap();
 
-    let tk = moderator::generate_token(id, m);
-    let (_mf, _com) = sender::generate_frank(ptext, tk);
+    let mut rng = rand::thread_rng();
+    let tk = moderator::generate_token(id, m, &mut rng);
+    let (_mf, _com) = sender::generate_frank(ptext, tk, &mut rng);
 
     let mfrank = tests::MFRANK.to_vec();
-
     mfrank
 }
 
@@ -67,9 +67,10 @@ pub fn remove_mfrank(mfrank_bytes: &[u8]) -> String{
     //
     // let mut buff_env = Vec::new();
     // let envelope = utils::read_from_file::<Envelope>("envelope.txt",&mut buff_env);
-
-    let mod_pk: RistrettoPoint = bincode::deserialize(tests::MOD_PK).unwrap();
-    let plat_pk: RistrettoPoint = bincode::deserialize(tests::PLAT_PK).unwrap();
+    let mod_pk_bytes: Vec<u8> = bincode::deserialize(tests::MOD_PK).unwrap();
+    let plat_pk_bytes: Vec<u8> = bincode::deserialize(tests::PLAT_PK).unwrap();
+    let mod_pk = PublicKey::from_bytes(&mod_pk_bytes).unwrap();
+    let plat_pk = PublicKey::from_bytes(&plat_pk_bytes).unwrap();
     let envelope : Envelope = bincode::deserialize(tests::ENVELOPE).unwrap();
     let mfrank : Mfrank = bincode::deserialize(mfrank_bytes).unwrap();
     let m = mfrank.msg.clone();

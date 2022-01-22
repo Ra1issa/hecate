@@ -3,7 +3,6 @@ use hecate::hooks::{
     remove_mfrank,
 };
 
-use bincode;
 use jni::JNIEnv;
 use jni::objects::{JClass, JString};
 use jni::sys::{jstring, jcharArray};

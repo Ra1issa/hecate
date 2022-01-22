@@ -50,9 +50,9 @@ dependencies = [
 
 [[package]]
 name = "anyhow"
-version = "1.0.52"
+version = "1.0.53"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "84450d0b4a8bd1ba4144ce8ce718fbc5d071358b1e5384bace6536b3d1f2d5b3"
+checksum = "94a45b455c14666b85fc40a019e8ab9eb75e3a124e05494f5397122bc9eb06e0"
 
 [[package]]
 name = "arrayref"
@@ -408,6 +408,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "ed25519"
+version = "1.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "74e1069e39f1454367eb2de793ed062fac4c35c2934b76a81d90dd9abcd28816"
+dependencies = [
+ "signature",
+]
+
+[[package]]
+name = "ed25519-dalek"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c762bae6dcaf24c4c84667b8579785430908723d5c889f469d76a41d59cc7a9d"
+dependencies = [
+ "curve25519-dalek",
+ "ed25519",
+ "rand",
+ "serde",
+ "sha2",
+ "zeroize",
+]
+
+[[package]]
 name = "either"
 version = "1.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -490,9 +513,10 @@ dependencies = [
  "chrono",
  "criterion",
  "curve25519-dalek",
+ "ed25519",
+ "ed25519-dalek",
  "jni",
  "libsignal-protocol",
- "poksho",
  "rand",
  "rand_core",
  "serde",
@@ -630,7 +654,7 @@ checksum = "1b03d17f364a3a042d5e5d46b053bbbf82c92c9430c592dd4c064dc6ee997125"
 [[package]]
 name = "libsignal-protocol"
 version = "0.1.0"
-source = "git+https://github.com/Ra1issa/libsignal-client#e23a6400b66e0009f9a74219193f09eb7cbd97e5"
+source = "git+https://github.com/Ra1issa/libsignal-client.git?branch=hecateless#935440d57c2c76243d66f1e56bca81241a636aed"
 dependencies = [
  "aes",
  "aes-gcm-siv",
@@ -783,16 +807,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "521fa9638fa597e1dc53e9412a4f9cefb01187ee1f7413076f9e6749e2885ba9"
 dependencies = [
  "plotters-backend",
-]
-
-[[package]]
-name = "poksho"
-version = "0.7.0"
-source = "git+https://github.com/Ra1issa/libsignal-client#e23a6400b66e0009f9a74219193f09eb7cbd97e5"
-dependencies = [
- "curve25519-dalek",
- "hmac",
- "sha2",
 ]
 
 [[package]]
@@ -1126,7 +1140,7 @@ dependencies = [
 [[package]]
 name = "signal-crypto"
 version = "0.1.0"
-source = "git+https://github.com/Ra1issa/libsignal-client#e23a6400b66e0009f9a74219193f09eb7cbd97e5"
+source = "git+https://github.com/Ra1issa/libsignal-client.git?branch=hecateless#935440d57c2c76243d66f1e56bca81241a636aed"
 dependencies = [
  "aes",
  "generic-array",
@@ -1136,6 +1150,12 @@ dependencies = [
  "sha2",
  "subtle",
 ]
+
+[[package]]
+name = "signature"
+version = "1.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f054c6c1a6e95179d6f23ed974060dcefb2d9388bb7256900badad682c499de4"
 
 [[package]]
 name = "subtle"

@@ -3,12 +3,13 @@ use hecate::{
     utils,
     types::{Moderator, Report, Trace},
 };
-use curve25519_dalek::ristretto::RistrettoPoint;
+
 use std::{
     net::TcpStream,
     io::{BufRead, BufReader},
-    // time::SystemTime,
 };
+use ed25519_dalek::PublicKey;
+
 pub fn receive_report() -> Report{
     let address = "127.0.0.1:3000";
     let report = match TcpStream::connect(address){
@@ -29,7 +30,8 @@ pub fn verify_message(report: Report) -> Trace{
     let moderator = utils::read_from_file::<Moderator>("mod_keys.txt",&mut buff_pk);
 
     let mut buff_pk = Vec::new();
-    let plat_pk = utils::read_from_file::<RistrettoPoint>("plat_pk.txt",&mut buff_pk);
+    let plat_pk = utils::read_from_file::<Vec<u8>>("plat_pk.txt",&mut buff_pk);
+    let plat_pk = PublicKey::from_bytes(&plat_pk).unwrap();
 
     moderator::inspect(report, moderator, plat_pk)
 }

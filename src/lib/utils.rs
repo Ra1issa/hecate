@@ -1,11 +1,3 @@
-use curve25519_dalek::{
-    scalar::Scalar,
-    constants::RISTRETTO_BASEPOINT_POINT,
-    ristretto::RistrettoPoint,
-};
-use rand::Rng;
-use rand_core::OsRng;
-
 use std::{
     fs::{create_dir_all, File},
     io::{Read, Write},
@@ -13,37 +5,38 @@ use std::{
 };
 use serde::{Serialize, Deserialize};
 use shellexpand;
+use rand::{CryptoRng, Rng};
 
-pub fn random_block(size: u8) -> Vec<u8>{
-    let mut block = Vec::new();
-    for _i in 0..size {
-        block.push(rand::thread_rng().gen::<u8>());
+pub fn random_block
+<R: CryptoRng + Rng>
+(
+    size: usize,
+    rng: &mut R,
+) -> Vec<u8> {
+    let mut block = vec![0 as u8; size];
+    for i in 0..size {
+        block[i] = rng.gen();
     }
     return block;
 }
 
 pub fn add_bytes(a: &[u8], b: &[u8]) -> Vec<u8>{
-    let mut c = Vec::new();
-    for i in 0..a.len(){
+    let c_len = a.len();
+    let mut c = vec![0 as u8; c_len];
+    for i in 0..c_len{
         let r = ((a[i] as u16 + b[i] as u16) % 256) as u8;
-        c.push(r as u8);
+        c[i] = r as u8;
     }
     return c;
 }
 
 pub fn sub_bytes(b: &[u8], c: &[u8]) -> Vec<u8>{
-    let mut a = Vec::new();
-    for i in 0..b.len(){
-        a.push(((c[i] as i16 - b[i] as i16) % 256) as u8);
+    let a_len = c.len();
+    let mut a = vec![0 as u8; a_len];
+    for i in 0..a_len{
+        a[i] = ((c[i] as i16 - b[i] as i16) % 256) as u8;
     }
     return a;
-}
-
-pub fn generate_keys() -> (Scalar, RistrettoPoint){
-    let mut rng = OsRng;
-    let sk: Scalar = Scalar::random(&mut rng);
-    let pk = sk * RISTRETTO_BASEPOINT_POINT;
-    return (sk, pk);
 }
 
 pub fn write_to_file<'a, T: Serialize>

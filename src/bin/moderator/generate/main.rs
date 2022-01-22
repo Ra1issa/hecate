@@ -3,7 +3,7 @@ use hecate::{
     utils,
     types::{Moderator, Token},
 };
-use curve25519_dalek::ristretto::RistrettoPoint;
+
 use std::{
     net::{
         TcpListener,
@@ -20,7 +20,8 @@ pub fn connect_send(id: Vec<u8>, m: Moderator){
         match stream {
             Ok(mut stream) => {
                 println!("New connection: {}", stream.peer_addr().unwrap());
-                let tk = moderator::generate_token(id.clone(), m.clone());
+                let mut rng = rand::thread_rng();
+                let tk = moderator::generate_token(id.clone(), m.clone(),&mut rng);
                 let tk_bytes = bincode::serialize(&tk).unwrap();
                 let _ = stream.write_all(&tk_bytes);
                 let _ = stream.flush();
@@ -39,10 +40,9 @@ fn main(){
     let id = utils::read_from_file::<Vec<u8>>("user_id.txt",&mut buff_id);
     let mut buff_m = Vec::new();
     let m = utils::read_from_file::<Moderator>("mod_keys.txt",&mut buff_m);
-    
-    utils::write_to_file::<RistrettoPoint>(m.sig_pk, "mod_pk.txt");
 
     // let _ = connect_send(id, m);
-    let tk = moderator::generate_token(id.clone(), m.clone());
+    let mut rng = rand::thread_rng();
+    let tk = moderator::generate_token(id.clone(), m.clone(),&mut rng);
     utils::write_to_file::<Token>(tk, "token.txt");
 }

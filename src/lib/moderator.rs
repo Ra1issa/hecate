@@ -4,37 +4,46 @@ use crate::{
     types::{Moderator, Token, Trace, Report},
 };
 
-use poksho;
-
 use signal_crypto::{
     Aes256GcmEncryption,
     Aes256GcmDecryption,
 };
 
-use curve25519_dalek::{
-    ristretto::RistrettoPoint,
+use ed25519_dalek::{
+    Keypair,
+    PublicKey,
+    Signer,
+    ed25519::signature::Signature
 };
+
 use chrono::Utc;
 use std::convert::TryInto;
+use rand::{CryptoRng, Rng};
 
-pub fn setup_moderator() -> Moderator{
-    let (sig_sk, sig_pk) = utils::generate_keys();
-    let enc_sk = utils::random_block(32);
+pub fn setup_moderator
+<R: CryptoRng + Rng>
+(
+    rng: &mut R
+)
+-> Moderator {
+    let keypair: Keypair = Keypair::generate(rng);
+    let enc_sk = utils::random_block(32, rng);
     Moderator
     {
         enc_sk,
-        sig_sk,
-        sig_pk,
+        keypair: keypair.to_bytes().to_vec(),
     }
 }
 
 pub fn generate_token
+<R: CryptoRng + Rng>
 (
     id: Vec<u8>,
     m: Moderator,
-) -> Token {
-    let randomness = utils::random_block(32);
-    let nonce = utils::random_block(12);
+    rng:  &mut R
+)
+-> Token {
+    let nonce = utils::random_block(12, rng);
     let aad = "".as_bytes();
 
     // Generate x1
@@ -48,35 +57,36 @@ pub fn generate_token
     let time = dt.timestamp().to_le_bytes().to_vec();
 
     // Compress RistrettoPt and cast it to the bytes
-    let (ske, pke) = utils::generate_keys();
-    let pke = pke.compress();
-    let pke = pke.as_bytes().to_vec();
-
+    let key_eph =  Keypair::generate(rng);
+    let pke = key_eph.public.as_bytes().to_vec();
     // Concatenate what will be signed
-    let s = [x1.clone(), nonce.clone(), pke.clone(), time.clone()].concat();
+    let s = [x1.clone(), nonce.clone(), pke, time.clone()].concat();
 
     // Sign
-    let mod_sig = poksho::sign(m.sig_sk, m.sig_pk, &s, &randomness).unwrap();
+    let mod_keys = Keypair::from_bytes(&m.keypair).unwrap();
+    let mod_sig = mod_keys.sign(&s);
 
     Token
     {
         x1,
         nonce,
-        mod_sig,
-        ske: ske.to_bytes().to_vec(),
-        pke,
+        mod_sig: mod_sig.as_bytes().to_vec(),
+        key_eph: key_eph.to_bytes().to_vec(),
         time,
     }
 }
 
-pub fn generate_batch(
+pub fn generate_batch
+<R: CryptoRng + Rng>
+(
     batch_size: usize,
     id: Vec<u8>,
     m: Moderator,
+    rng:  &mut R
 )-> Vec<Token>{
     let mut batch: Vec<Token> = Vec::new();
     for _i in 0..batch_size{
-        batch.push(generate_token(id.clone(), m.clone()));
+        batch.push(generate_token(id.clone(), m.clone(), rng));
     }
     batch
 }
@@ -85,13 +95,13 @@ pub fn generate_batch(
 pub fn inspect(
     report: Report,
     m: Moderator,
-    plat_pk: RistrettoPoint,
+    plat_pk: PublicKey,
 ) -> Trace {
     let aad = "".as_bytes();
+    let mod_pk = (Keypair::from_bytes(&m.keypair).unwrap()).public;
+    let _ = check_message(report.mfrank.clone(), report.envelope.clone(), mod_pk, plat_pk);
 
-    let _ = check_message(report.mfrank.clone(), report.envelope.clone(), m.sig_pk, plat_pk);
-
-    let mut buf = report.mfrank.x1.clone();
+    let mut buf = report.mfrank.x1;
     let mut gcm_dec = Aes256GcmDecryption::new(&m.enc_sk, &report.mfrank.nonce, &aad).unwrap();
     gcm_dec.decrypt(&mut buf).unwrap();
     let time_mod = i64::from_le_bytes(report.mfrank.time.try_into().unwrap());

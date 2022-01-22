@@ -1,17 +1,24 @@
 use crate::{
-    utils,
     types::{Envelope, Platform},
 };
+use ed25519_dalek::{
+    Keypair,
+    Signer,
+    ed25519::signature::Signature,
+};
 
-use poksho;
 use chrono::Utc;
+use rand::{CryptoRng, Rng};
 
-pub fn setup_platform() -> Platform{
-    let (sig_sk, sig_pk) = utils::generate_keys();
+pub fn setup_platform
+<R: CryptoRng + Rng>
+(
+    rng: &mut R
+) -> Platform{
+    let keypair: Keypair = Keypair::generate(rng);
     Platform
     {
-        sig_sk,
-        sig_pk,
+        keypair: keypair.to_bytes().to_vec(),
     }
 }
 
@@ -20,8 +27,6 @@ pub fn sign_com
     com: Vec<u8>,
     p: Platform,
 ) -> Envelope{
-
-    let randomness = utils::random_block(32);
     // Time stamp
     let dt = Utc::now();
     let time = dt.timestamp().to_le_bytes().to_vec();
@@ -30,7 +35,8 @@ pub fn sign_com
     let s = [com.clone(), time.clone()].concat();
 
     // Sign
-    let sig = poksho::sign(p.sig_sk, p.sig_pk, &s, &randomness).unwrap();
+    let pk = Keypair::from_bytes(&p.keypair).unwrap();
+    let sig = pk.sign(&s).as_bytes().to_vec();
 
     Envelope
     {

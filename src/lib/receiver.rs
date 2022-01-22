@@ -2,24 +2,17 @@ use crate::{
     utils,
     types::{Mfrank, Envelope, Report},
 };
-use poksho;
+
 use libsignal_protocol::crypto;
-use curve25519_dalek::ristretto::{
-    RistrettoPoint,
-    CompressedRistretto,
-};
 use sha2::{Sha256, Digest};
 use std::convert::TryInto;
-
-pub fn check_mfrank(){
-
-}
+use ed25519_dalek::{Signature, PublicKey, Verifier};
 
 pub fn check_message(
     mfrank: Mfrank,
     envelope: Envelope,
-    mod_pk: RistrettoPoint,
-    plat_pk: RistrettoPoint,
+    mod_pk: PublicKey,
+    plat_pk: PublicKey,
 )-> Report{
     let mf = mfrank.clone();
     let env = envelope.clone();
@@ -28,14 +21,15 @@ pub fn check_message(
     let s = [mf.x1.clone(), mf.nonce.clone(), mf.pke.clone(), mf.time.clone()].concat();
     let e = [env.com.clone(), env.time.clone()].concat();
 
-    // Turn pke back to RistrettoPt
-    let r_pke = CompressedRistretto(mf.pke.try_into().unwrap());
-    let r_pke = r_pke.decompress().unwrap();
-
     // Verify Signatures
-    poksho::verify_signature(&mf.send_sig, r_pke, &mf.x2).unwrap();
-    poksho::verify_signature(&mf.mod_sig, mod_pk, &s).unwrap();
-    poksho::verify_signature(&env.sig, plat_pk, &e).unwrap();
+    let mod_sig = Signature::from_bytes(&mf.mod_sig).unwrap();
+    let send_sig = Signature::from_bytes(&mf.send_sig).unwrap();
+    let plat_sig = Signature::from_bytes(&env.sig).unwrap();
+
+    let pke = PublicKey::from_bytes(&mfrank.pke).unwrap();
+    pke.verify(&mf.x2, &send_sig).unwrap();
+    mod_pk.verify(&s, &mod_sig).unwrap();
+    plat_pk.verify( &e, &plat_sig).unwrap();
 
     // Verify Commitment
     let x = [mf.x1.clone(), mf.x2.clone()].concat();
