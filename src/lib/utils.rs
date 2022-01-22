@@ -66,10 +66,6 @@ where
     let path_str = path.clone().into_os_string().into_string().unwrap();
     let mut file = File::open(path_str).unwrap();
     file.read_to_end(buff).unwrap();
-    println!("*********************************");
-    println!("file name {:?}", file_name);
-    println!("data {:?}", buff);
-    println!("*********************************");
     let msg: T = bincode::deserialize(buff).unwrap();
     return msg;
 }
@@ -77,7 +73,6 @@ where
 pub fn get_data_path() -> PathBuf{
     let root_dir = shellexpand::tilde("~/Documents/hecate/data").to_string();
     let path = PathBuf::from(root_dir);
-    // For some reason doesn't behave properly with java
     create_dir_all(path.clone()).unwrap();
     path
 }
