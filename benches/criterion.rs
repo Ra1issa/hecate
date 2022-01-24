@@ -4,6 +4,7 @@ use hecate::{
     platform,
     sender,
     receiver,
+    forwarder,
     types::Test,
     utils,
 };
@@ -13,7 +14,7 @@ use ed25519_dalek::{Keypair, PublicKey};
 
 pub fn generate_test_parameters()-> Test {
     let mut path = utils::get_data_path();
-    path.push("msgs/message2.txt");
+    path.push("msgs/msg6.txt");
     let msg: String= fs::read_to_string(path).unwrap();
 
     let mut rng = rand::thread_rng();
@@ -52,6 +53,9 @@ pub fn criterion_benchmark_moderator(c: &mut Criterion) {
     let mut group = c.benchmark_group("Moderator");
     group.significance_level(0.1).sample_size(300);
 
+    let max_time = Duration::from_secs(10);
+    group.measurement_time(max_time);
+
     let plat_pk = PublicKey::from_bytes(&test.plat_pk).unwrap();
 
     group.bench_function("Moderator :: Inspect and Trace ", |b| b.iter(||
@@ -61,6 +65,9 @@ pub fn criterion_benchmark_moderator(c: &mut Criterion) {
             black_box(plat_pk),
         )
     ));
+
+    let max_time = Duration::from_secs(5);
+    group.measurement_time(max_time);
 
     let batch_sizes = [1, 10, 100, 1000, 10000];
     for i in 0..batch_sizes.len(){
@@ -91,17 +98,21 @@ pub fn criterion_benchmark_sender(c: &mut Criterion) {
     let mut group = c.benchmark_group("Sender");
     group.significance_level(0.1).sample_size(300);
 
-    static B: usize = 1;
-    static KB: usize = 1000;
 
-    let msg_sizes = [10 * B, 100 * B, KB, 10 * KB, 100 * KB];
-    for i in 0..4 as usize{
+    let msg_sizes = [10.0, 50.0, 100.0, 250.0, 500.0, 750.0, 1.0, 2.5, 5.0, 7.5, 10.0];
+    for i in 0..msg_sizes.len(){
+
         let mut path = utils::get_data_path();
-        let file = format!{"msgs/message{:?}.txt", i};
+        let file = format!{"msgs/msg{:?}.txt", i};
         path.push(file);
 
         let msg: String= fs::read_to_string(path).unwrap();
-        let test_name = format!{"Frank :: Plaintext Size {:?}B", msg_sizes[i].to_string()};
+        let mut test_name = str::replace(&msg_sizes[i].to_string(),".0", "");
+        if i < 6{
+            test_name = format!{"Frank :: Plaintext Size {:?}B", test_name};
+        }else{
+            test_name = format!{"Frank :: Plaintext Size {:?}KB", test_name};
+        }
         group.bench_function(test_name, |b| b.iter(||
             sender::generate_frank(
                 black_box(msg.clone()),
@@ -145,11 +156,28 @@ pub fn criterion_benchmark_platform(c: &mut Criterion) {
     ));
 }
 
+pub fn criterion_benchmark_forwarder(c: &mut Criterion) {
+    let test = generate_test_parameters();
+    let mut group = c.benchmark_group("Forwarder");
+    group.significance_level(0.1).sample_size(300);
+
+    let mut rng = rand::thread_rng();
+    group.bench_function("Forward", |b| b.iter(||
+        forwarder::forward(
+            black_box(Some(test.mfrank.clone())),
+            black_box(None),
+            black_box(test.envelope.clone()),
+            black_box(&mut rng),
+        )
+    ));
+}
+
 
 
 criterion_group!(benches,
     criterion_benchmark_sender,
     criterion_benchmark_receiver,
+    criterion_benchmark_forwarder,
     criterion_benchmark_platform,
     criterion_benchmark_moderator
 );

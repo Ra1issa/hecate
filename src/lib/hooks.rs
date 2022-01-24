@@ -58,6 +58,7 @@ pub fn remove_envelope_com(ctext: &[u8]) -> Vec<u8>{
 }
 
 pub fn remove_mfrank(mfrank_bytes: &[u8]) -> String{
+    println!("mfrank_bytes {:?}", mfrank_bytes.len());
     println!("Removing Mfrank");
     // let mut buff_pk = Vec::new();
     // let mod_pk = utils::read_from_file::<RistrettoPoint>("mod_pk.txt",&mut buff_pk);

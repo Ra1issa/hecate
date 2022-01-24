@@ -28,12 +28,25 @@ cargo run --release --bin platform_timestamp
 
 echo "****************************"
 echo "****************************"
-echo "Receiver :: Verify Message"
-cargo run --release --bin receiver
+echo "Receiver :: Verify Message Sent"
+cargo run --release --bin receive_sent
 
 echo "****************************"
 echo "****************************"
 echo "Moderator :: Verify Message and Trace"
 cargo run --release --bin moderator_inspect
+echo "****************************"
+echo "****************************"
+
+echo "****************************"
+echo "****************************"
+echo "Forwarder :: Forward"
+cargo run --release --bin forwarder
+
+echo "****************************"
+echo "****************************"
+echo "****************************"
+echo "Receiver :: Verify Message Forwarded"
+cargo run --release --bin receive_forward
 echo "****************************"
 echo "****************************"

@@ -51,8 +51,16 @@ name = "sender_fetch"
 path = "src/bin/sender/fetch_tokens/main.rs"
 
 [[bin]]
-name = "receiver"
-path = "src/bin/receiver/main.rs"
+name = "receive_sent"
+path = "src/bin/receiver/sent/main.rs"
+
+[[bin]]
+name = "receive_forward"
+path = "src/bin/receiver/forward/main.rs"
+
+[[bin]]
+name = "forwarder"
+path = "src/bin/forwarder/main.rs"
 
 [[bin]]
 name = "platform_timestamp"

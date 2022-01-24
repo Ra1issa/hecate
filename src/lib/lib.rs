@@ -2,6 +2,7 @@ pub mod moderator;
 pub mod platform;
 pub mod receiver;
 pub mod sender;
+pub mod forwarder;
 pub mod utils;
 pub mod types;
 pub mod hooks;

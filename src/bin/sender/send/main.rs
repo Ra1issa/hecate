@@ -7,7 +7,7 @@ use std::fs;
 
 fn main(){
     let mut path = utils::get_data_path();
-    path.push("msgs/message2.txt");
+    path.push("msgs/msg1.txt");
     println!("path {:?}", path);
     let msg: String= fs::read_to_string(path).unwrap();
 
