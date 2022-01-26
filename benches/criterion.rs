@@ -29,7 +29,7 @@ pub fn generate_test_parameters()-> Test {
 
     let token = moderator::generate_token(id.clone(), m.clone(), &mut rng);
 
-    let msg_sizes = vec![10, 50, 100, 250, 500, 750, 1000, 2500, 5000, 7500,  8000, 9000, 10000];
+    let msg_sizes = vec![10, 100, 250, 500, 750, 1000, 2500, 5000, 7500,  8000, 9000, 10000];
     for i in 0..msg_sizes.len(){
         let mut path = utils::get_data_path();
         let file = format!{"msgs/msg{:?}.txt", i};
