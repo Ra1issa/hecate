@@ -67,7 +67,7 @@ pub fn generate_test_parameters()-> Test {
 
 
 pub fn criterion_benchmark_moderator(c: &mut Criterion) {
-    let mut rng = rand::thread_rng();
+    let mut rng = OsRng{};
     let test = generate_test_parameters();
     let mut group = c.benchmark_group("Moderator");
     group.sample_size(300);
@@ -121,7 +121,7 @@ pub fn criterion_benchmark_moderator(c: &mut Criterion) {
 }
 
 pub fn criterion_benchmark_sender(c: &mut Criterion) {
-    let mut rng = rand::thread_rng();
+    let mut rng = OsRng{};
     let test = generate_test_parameters();
 
     let mut group = c.benchmark_group("Sender");
@@ -192,7 +192,7 @@ pub fn criterion_benchmark_forwarder(c: &mut Criterion) {
     let mut group = c.benchmark_group("Forwarder");
     group.sample_size(300);
 
-    let mut rng = rand::thread_rng();
+    let mut rng = OsRng{};
 
     for i in 0..test.msg_sizes.len() {
         let mfrank = &test.mfrank[i];
