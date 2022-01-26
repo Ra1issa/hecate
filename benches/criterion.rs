@@ -5,6 +5,7 @@ use hecate::{
     sender,
     receiver,
     forwarder,
+    tests,
     types::Test,
     utils,
 };
@@ -21,14 +22,14 @@ pub fn generate_test_parameters()-> Test {
     let mut report_vec = Vec::new();
 
     let mut rng = rand::thread_rng();
-    let id = utils::random_block(32, &mut rng);
+    // let id = utils::random_block(32, &mut rng);
+    let id = tests::ID.to_vec();
     let m = moderator::setup_moderator(&mut rng);
     let mod_pk = (Keypair::from_bytes(&m.keypair).unwrap()).public;
     let p = platform::setup_platform(&mut rng);
     let plat_pk = (Keypair::from_bytes(&p.keypair).unwrap()).public;
 
     let token = moderator::generate_token(id.clone(), m.clone(), &mut rng);
-
     let msg_sizes = vec![10, 100, 250, 500, 750, 1000, 2500, 5000, 7500,  8000, 9000, 10000];
     for i in 0..msg_sizes.len(){
         let mut path = utils::get_data_path();
