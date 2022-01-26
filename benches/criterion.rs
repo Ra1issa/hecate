@@ -213,9 +213,9 @@ pub fn criterion_benchmark_forwarder(c: &mut Criterion) {
 
 criterion_group!(benches,
     criterion_benchmark_sender,
-    // criterion_benchmark_receiver,
-    // criterion_benchmark_forwarder,
-    // criterion_benchmark_platform,
-    // criterion_benchmark_moderator
+    criterion_benchmark_receiver,
+    criterion_benchmark_forwarder,
+    criterion_benchmark_platform,
+    criterion_benchmark_moderator
 );
 criterion_main!(benches);
