@@ -68,7 +68,7 @@ pub fn criterion_benchmark_moderator(c: &mut Criterion) {
     let mut rng = rand::thread_rng();
     let test = generate_test_parameters();
     let mut group = c.benchmark_group("Moderator");
-    group.significance_level(0.1).sample_size(300);
+    group.sample_size(300);
 
     let max_time = Duration::from_secs(15);
     group.measurement_time(max_time);
@@ -123,7 +123,7 @@ pub fn criterion_benchmark_sender(c: &mut Criterion) {
     let test = generate_test_parameters();
 
     let mut group = c.benchmark_group("Sender");
-    group.significance_level(0.1).sample_size(300);
+    group.sample_size(300);
 
 
     for i in 0..test.msg_sizes.len() {
@@ -144,7 +144,7 @@ pub fn criterion_benchmark_sender(c: &mut Criterion) {
 pub fn criterion_benchmark_receiver(c: &mut Criterion) {
     let test = generate_test_parameters();
     let mut group = c.benchmark_group("Receiver");
-    group.significance_level(0.1).sample_size(300);
+    group.sample_size(300);
 
     let plat_pk = PublicKey::from_bytes(&test.plat_pk).unwrap();
     let mod_pk = PublicKey::from_bytes(&test.mod_pk).unwrap();
@@ -172,7 +172,7 @@ pub fn criterion_benchmark_receiver(c: &mut Criterion) {
 pub fn criterion_benchmark_platform(c: &mut Criterion) {
     let test = generate_test_parameters();
     let mut group = c.benchmark_group("Platform");
-    group.significance_level(0.1).sample_size(300);
+    group.sample_size(300);
 
     let max_time = Duration::from_secs(15);
     group.measurement_time(max_time);
@@ -188,7 +188,7 @@ pub fn criterion_benchmark_platform(c: &mut Criterion) {
 pub fn criterion_benchmark_forwarder(c: &mut Criterion) {
     let test = generate_test_parameters();
     let mut group = c.benchmark_group("Forwarder");
-    group.significance_level(0.1).sample_size(300);
+    group.sample_size(300);
 
     let mut rng = rand::thread_rng();
 
