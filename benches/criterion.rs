@@ -109,9 +109,9 @@ pub fn criterion_benchmark_sender(c: &mut Criterion) {
         let msg: String= fs::read_to_string(path).unwrap();
         let mut test_name = str::replace(&msg_sizes[i].to_string(),".0", "");
         if i < 6{
-            test_name = format!{"Frank :: Plaintext Size {:?}B", test_name};
+            test_name = format!{"Frank :: Msg Size {:?}B", test_name};
         }else{
-            test_name = format!{"Frank :: Plaintext Size {:?}KB", test_name};
+            test_name = format!{"Frank :: Msg Size {:?}KB", test_name};
         }
         group.bench_function(test_name, |b| b.iter(||
             sender::generate_frank(
@@ -129,14 +129,36 @@ pub fn criterion_benchmark_receiver(c: &mut Criterion) {
     group.significance_level(0.1).sample_size(300);
     let plat_pk = PublicKey::from_bytes(&test.plat_pk).unwrap();
     let mod_pk = PublicKey::from_bytes(&test.mod_pk).unwrap();
-    group.bench_function("Verify Message", |b| b.iter(||
-        receiver::check_message(
-            black_box(test.mfrank.clone()),
-            black_box(test.envelope.clone()),
-            black_box(mod_pk),
-            black_box(plat_pk),
-        )
-    ));
+
+    let mut rng = rand::thread_rng();
+    let test = generate_test_parameters();
+
+    let msg_sizes = [10.0, 50.0, 100.0, 250.0, 500.0, 750.0, 1.0, 2.5, 5.0, 7.5, 10.0];
+    for i in 0..msg_sizes.len(){
+
+        let mut path = utils::get_data_path();
+        let file = format!{"msgs/msg{:?}.txt", i};
+        path.push(file);
+
+        let msg: String= fs::read_to_string(path).unwrap();
+        let mut test_name = str::replace(&msg_sizes[i].to_string(),".0", "");
+        if i < 6{
+            test_name = format!{"Verify :: Msg Size {:?}B", test_name};
+        }else{
+            test_name = format!{"Verify :: Msg Size {:?}KB", test_name};
+        }
+        let (mfrank, com) = sender::generate_frank(msg.to_string(), test.token.clone(), &mut rng);
+        let envelope = platform::sign_com(com, test.platform.clone());
+
+        group.bench_function(test_name, |b| b.iter(||
+            receiver::check_message(
+                black_box(mfrank.clone()),
+                black_box(envelope.clone()),
+                black_box(mod_pk),
+                black_box(plat_pk),
+            )
+        ));
+    }
 
 }
 
