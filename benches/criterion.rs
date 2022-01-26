@@ -6,7 +6,7 @@ use hecate::{
     receiver,
     forwarder,
     tests,
-    types::Test,
+    types::{Moderator, Platform, Test},
     utils,
 };
 use std::fs;
@@ -25,9 +25,9 @@ pub fn generate_test_parameters()-> Test {
 
     let mut rng = OsRng{};
     let id = tests::ID.to_vec();
-    let m = bincode::deserialize(tests::MOD).unwrap();
+    let m: Moderator = bincode::deserialize(tests::MOD).unwrap();
     let mod_pk = (Keypair::from_bytes(&m.keypair).unwrap()).public;
-    let p = bincode::deserialize(tests::PLAT).unwrap();
+    let p: Platform = bincode::deserialize(tests::PLAT).unwrap();
     let plat_pk = (Keypair::from_bytes(&p.keypair).unwrap()).public;
 
     let token = moderator::generate_token(id.clone(), m.clone(), &mut rng);
