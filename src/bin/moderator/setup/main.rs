@@ -4,9 +4,10 @@ use hecate::{
     types:: Moderator,
 };
 use ed25519_dalek::Keypair;
+use rand::rngs::OsRng;
 
 fn main(){
-    let mut rng = rand::thread_rng();
+    let mut rng = OsRng{};
 
     let id = utils::random_block(32, &mut rng);
     let m = moderator::setup_moderator(&mut rng);

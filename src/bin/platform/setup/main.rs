@@ -4,9 +4,10 @@ use hecate::{
     types::Platform,
 };
 use ed25519_dalek::Keypair;
+use rand::rngs::OsRng;
 
 fn main(){
-    let mut rng = rand::thread_rng();
+    let mut rng = OsRng{};
     let p = platform::setup_platform(&mut rng);
     let k = Keypair::from_bytes(&p.keypair).unwrap();
     utils::write_to_file::<Platform>(p.clone(), "plat_keys.txt");

@@ -10,7 +10,7 @@ use std::{
     },
     io::Write,
 };
-
+use rand::rngs::OsRng;
 
 pub fn connect_send(id: Vec<u8>, m: Moderator){
     let address = "127.0.0.1:3000";
@@ -42,7 +42,7 @@ fn main(){
     let m = utils::read_from_file::<Moderator>("mod_keys.txt",&mut buff_m);
 
     // let _ = connect_send(id, m);
-    let mut rng = rand::thread_rng();
+    let mut rng = OsRng{};
     let tk = moderator::generate_token(id.clone(), m.clone(),&mut rng);
     utils::write_to_file::<Token>(tk, "token.txt");
 }
