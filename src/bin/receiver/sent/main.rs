@@ -3,35 +3,8 @@ use hecate::{
     utils,
     types::{Envelope, Mfrank, Report},
 };
-use std::{
-    net::{
-        TcpListener,
-    },
-    io::Write
-};
+
 use ed25519_dalek::PublicKey;
-
-pub fn connect_report(report: Report){
-    let address = "127.0.0.1:3000";
-    let listener = TcpListener::bind(address).unwrap();
-    println!("Server listening on port 3000");
-
-    for stream in listener.incoming() {
-        match stream {
-            Ok(mut stream) => {
-                println!("New connection: {}", stream.peer_addr().unwrap());
-                let report_bytes = bincode::serialize(&report).unwrap();
-                let _ = stream.write_all(&report_bytes);
-                let _ = stream.flush();
-                return;
-            }
-            Err(e) => {
-                println!("Error: {}", e);
-            }
-        }
-    }
-    drop(listener);
-}
 
 fn main(){
     let mut buff_mfrank = Vec::new();
@@ -50,5 +23,4 @@ fn main(){
 
     let report = receiver::check_message(mfrank, envelope, mod_pk, plat_pk);
     utils::write_to_file::<Report>(report, "report.txt");
-    // connect_report(rep);
 }

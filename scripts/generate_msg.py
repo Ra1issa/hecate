@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from shutil import copyfile
 
-file_sizes = [10, 100, 250, 500, 750, 1000, 2500, 5000, 7500, 10000, 100000]
+file_sizes = [10, 100, 250, 500, 750, 1000, 2500, 5000, 7500, 8000, 9000, 10000]
 
 # using path.expanduser() getting username
 dir = os.path.expanduser('~') + '/Documents/hecate/data'

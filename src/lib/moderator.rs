@@ -27,7 +27,8 @@ pub fn setup_moderator
 )
 -> Moderator {
     let keypair: Keypair = Keypair::generate(rng);
-    let enc_sk = utils::random_block(32, rng);
+    let mut enc_sk = vec![0 as u8; 32];
+    rng.fill_bytes(&mut enc_sk);
     Moderator
     {
         enc_sk,

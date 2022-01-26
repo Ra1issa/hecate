@@ -39,5 +39,4 @@ fn main(){
     };
     let report = receiver::check_message(mfrank.clone(), envelope.clone(), mod_pk, plat_pk);
     utils::write_to_file::<Report>(report, "report.txt");
-    // connect_report(rep);
 }

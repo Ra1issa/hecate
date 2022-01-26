@@ -12,7 +12,7 @@ use ed25519_dalek::PublicKey;
 const ENVELOPE_SIZE: usize = 128;
 
 pub fn inject_mfrank(ptext: String) -> Vec<u8>{
-    println!("Adding Mfrank");
+    // println!("Adding Mfrank");
     // let id = utils::random_block(32);
     // let mut buff_m = Vec::new();
     // let m = utils::read_from_file::<Moderator>("mod_keys.txt",&mut buff_m);
@@ -29,7 +29,7 @@ pub fn inject_mfrank(ptext: String) -> Vec<u8>{
 }
 
 pub fn inject_envelope_com(ctext: &[u8]) -> Vec<u8>{
-    println!("Adding envelope");
+    // println!("Adding envelope");
     // let mut buff_p = Vec::new();
     // let p = utils::read_from_file::<Platform>("plat_keys.txt",&mut buff_p);
     let p: Platform = bincode::deserialize(tests::PLAT).unwrap();
@@ -45,7 +45,7 @@ pub fn inject_envelope_com(ctext: &[u8]) -> Vec<u8>{
 }
 
 pub fn remove_envelope_com(ctext: &[u8]) -> Vec<u8>{
-    println!("Removing envelope");
+    // println!("Removing envelope");
     let c_len = ctext.len();
     let _env_bytes = ctext[c_len-ENVELOPE_SIZE..c_len].to_vec();
     // Temporary: When the cipher is small, its not the actual message
@@ -58,8 +58,7 @@ pub fn remove_envelope_com(ctext: &[u8]) -> Vec<u8>{
 }
 
 pub fn remove_mfrank(mfrank_bytes: &[u8]) -> String{
-    println!("mfrank_bytes {:?}", mfrank_bytes.len());
-    println!("Removing Mfrank");
+    // println!("Removing Mfrank");
     // let mut buff_pk = Vec::new();
     // let mod_pk = utils::read_from_file::<RistrettoPoint>("mod_pk.txt",&mut buff_pk);
     //

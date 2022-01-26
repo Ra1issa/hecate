@@ -14,9 +14,7 @@ pub fn random_block
     rng: &mut R,
 ) -> Vec<u8> {
     let mut block = vec![0 as u8; size];
-    for i in 0..size {
-        block[i] = rng.gen();
-    }
+    rng.fill_bytes(&mut block);
     return block;
 }
 

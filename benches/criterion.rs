@@ -13,6 +13,7 @@ use std::fs;
 use core::time::Duration;
 use ed25519_dalek::{Keypair, PublicKey};
 use criterion::BenchmarkId;
+use rand::rngs::OsRng;
 
 pub fn generate_test_parameters()-> Test {
 
@@ -21,8 +22,8 @@ pub fn generate_test_parameters()-> Test {
     let mut envelope_vec = Vec::new();
     let mut report_vec = Vec::new();
 
-    let mut rng = rand::thread_rng();
-    // let id = utils::random_block(32, &mut rng);
+
+    let mut rng = OsRng{};
     let id = tests::ID.to_vec();
     let m = moderator::setup_moderator(&mut rng);
     let mod_pk = (Keypair::from_bytes(&m.keypair).unwrap()).public;
