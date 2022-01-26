@@ -92,14 +92,14 @@ pub struct Trace{
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Test{
     pub id: Vec<u8>,
-    pub msg: String,
+    pub msg: Vec<String>,
     pub token: Token,
-    pub mfrank: Mfrank,
+    pub mfrank: Vec<Mfrank>,
     pub mod_pk: Vec<u8>,
-    pub envelope: Envelope,
-    pub report: Report,
-    pub trace: Trace,
+    pub envelope: Vec<Envelope>,
+    pub report: Vec<Report>,
     pub moderator: Moderator,
     pub platform: Platform,
     pub plat_pk: Vec<u8>,
+    pub msg_sizes: Vec<usize>,
 }
