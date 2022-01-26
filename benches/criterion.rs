@@ -25,9 +25,9 @@ pub fn generate_test_parameters()-> Test {
 
     let mut rng = OsRng{};
     let id = tests::ID.to_vec();
-    let m = moderator::setup_moderator(&mut rng);
+    let m = bincode::deserialize(tests::MOD).unwrap();
     let mod_pk = (Keypair::from_bytes(&m.keypair).unwrap()).public;
-    let p = platform::setup_platform(&mut rng);
+    let p = bincode::deserialize(tests::PLAT).unwrap();
     let plat_pk = (Keypair::from_bytes(&p.keypair).unwrap()).public;
 
     let token = moderator::generate_token(id.clone(), m.clone(), &mut rng);
