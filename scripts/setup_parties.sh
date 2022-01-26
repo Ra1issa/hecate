@@ -1,4 +1,5 @@
-mkdir -p ~/Documents/hecate/data
+mkdir -p ~/Documents/hecate/data/msgs
+cp ../data/msgs/* ~/Documents/hecate/data/msgs
 
 echo "****************************"
 echo "****************************"
