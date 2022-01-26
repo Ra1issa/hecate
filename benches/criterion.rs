@@ -70,7 +70,7 @@ pub fn criterion_benchmark_moderator(c: &mut Criterion) {
     let mut group = c.benchmark_group("Moderator");
     group.significance_level(0.1).sample_size(300);
 
-    let max_time = Duration::from_secs(10);
+    let max_time = Duration::from_secs(15);
     group.measurement_time(max_time);
 
     let plat_pk = PublicKey::from_bytes(&test.plat_pk).unwrap();
@@ -149,7 +149,7 @@ pub fn criterion_benchmark_receiver(c: &mut Criterion) {
     let plat_pk = PublicKey::from_bytes(&test.plat_pk).unwrap();
     let mod_pk = PublicKey::from_bytes(&test.mod_pk).unwrap();
 
-    let max_time = Duration::from_secs(10);
+    let max_time = Duration::from_secs(15);
     group.measurement_time(max_time);
 
     for i in 0..test.msg_sizes.len() {
