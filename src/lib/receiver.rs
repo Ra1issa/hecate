@@ -12,29 +12,28 @@ use ed25519_dalek::{Signature, PublicKey, Verifier};
 pub fn check_authorship(
     mfrank: Mfrank,
     envelope: Envelope,
-)-> Envelope{
+)-> Mfrank{
     for i in 0..mfrank.com.len(){
         if mfrank.com[i] != 0 {
-            return Envelope{
-                com: mfrank.com,
-                sig: mfrank.plat_sig,
-                time: mfrank.plat_time,
-            };
+            return mfrank;
         }
     }
-    return envelope;
+    return Mfrank::new(mfrank, envelope);
 }
 
 
 pub fn check_message(
     mfrank: Mfrank,
-    envelope: Envelope,
     mod_pk: PublicKey,
     plat_pk: PublicKey,
 )-> Report{
     let mf = mfrank.clone();
-    let env =  envelope.clone();
 
+    let env =  Envelope{
+        com: mf.com,
+        sig: mf.plat_sig,
+        time: mf.plat_time,
+    };
     // Concatenate moderator token
     let s = [mf.x1.clone(), mf.nonce.clone(), mf.pke.clone(), mf.mod_time.clone()].concat();
     let e = [env.com.clone(), env.time.clone()].concat();
@@ -68,6 +67,5 @@ pub fn check_message(
 
     Report{
         mfrank,
-        envelope,
     }
 }

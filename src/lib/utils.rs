@@ -64,6 +64,10 @@ where
     let path_str = path.clone().into_os_string().into_string().unwrap();
     let mut file = File::open(path_str).unwrap();
     file.read_to_end(buff).unwrap();
+    // println!("****************************");
+    // println!("{:?}", file_name);
+    // println!("{:?}", buff);
+    // println!("****************************");
     let msg: T = bincode::deserialize(buff).unwrap();
     return msg;
 }

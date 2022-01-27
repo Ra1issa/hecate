@@ -43,7 +43,8 @@ pub fn generate_test_parameters()-> Test {
 
         let (mfrank, com) = sender::generate_frank(msg.to_string(), token.clone(), &mut rng);
         let envelope = platform::sign_com(com.clone(), p.clone());
-        let report = receiver::check_message(mfrank.clone(), envelope.clone(), mod_pk, plat_pk);
+        let new_mfrank = receiver::check_authorship(mfrank.clone(), envelope.clone());
+        let report = receiver::check_message(new_mfrank.clone(), mod_pk, plat_pk);
 
         mfrank_vec.push(mfrank);
         envelope_vec.push(envelope);
@@ -67,7 +68,7 @@ pub fn generate_test_parameters()-> Test {
 
 
 pub fn criterion_benchmark_moderator(c: &mut Criterion) {
-    let mut rng = OsRng{};
+    let rng = OsRng{};
     let test = generate_test_parameters();
     let mut group = c.benchmark_group("Moderator");
     group.sample_size(300);
@@ -90,34 +91,34 @@ pub fn criterion_benchmark_moderator(c: &mut Criterion) {
             );
         });
     }
+    //
+    // let max_time = Duration::from_secs(10);
+    // group.measurement_time(max_time);
+    //
+    // let batch_sizes = [1, 10, 100, 500, 1000, 2500, 5000, 7500, 10000];
+    // for i in 0..batch_sizes.len(){
+    //     let batch_size = batch_sizes[i];
+    //
+    //     if batch_size >= 1000 {
+    //         let max_time = Duration::from_secs(200);
+    //         group.measurement_time(max_time);
+    //     }else if batch_size == 10000 {
+    //         let max_time = Duration::from_secs(1500);
+    //         group.measurement_time(max_time);
+    //     }
+    //
+    //     group.bench_with_input(BenchmarkId::new("Generate Tokens :: ", batch_size), &batch_sizes, |b,  &_s| {
+    //         b.iter(||
+    //             moderator::generate_batch(
+    //                 black_box(batch_sizes[i]),
+    //                 black_box(test.id.clone()),
+    //                 black_box(test.moderator.clone()),
+    //                 black_box(&mut rng),
+    //             )
+    //         );
+    //     });
 
-    let max_time = Duration::from_secs(10);
-    group.measurement_time(max_time);
-
-    let batch_sizes = [1, 10, 100, 500, 1000, 2500, 5000, 7500, 10000];
-    for i in 0..batch_sizes.len(){
-        let batch_size = batch_sizes[i];
-
-        if batch_size >= 1000 {
-            let max_time = Duration::from_secs(200);
-            group.measurement_time(max_time);
-        }else if batch_size == 10000 {
-            let max_time = Duration::from_secs(1500);
-            group.measurement_time(max_time);
-        }
-
-        group.bench_with_input(BenchmarkId::new("Generate Tokens :: ", batch_size), &batch_sizes, |b,  &_s| {
-            b.iter(||
-                moderator::generate_batch(
-                    black_box(batch_sizes[i]),
-                    black_box(test.id.clone()),
-                    black_box(test.moderator.clone()),
-                    black_box(&mut rng),
-                )
-            );
-        });
-
-    }
+    // }
 }
 
 pub fn criterion_benchmark_sender(c: &mut Criterion) {
@@ -160,13 +161,12 @@ pub fn criterion_benchmark_receiver(c: &mut Criterion) {
         let msg_size =  test.msg_sizes[i];
         group.bench_with_input(BenchmarkId::new("Verify :: B", msg_size), &msg_size, |b, &_s| {
             b.iter(||{
-                let new_envelope = receiver::check_authorship(
+                let new_mfrank = receiver::check_authorship(
                     black_box(mfrank.clone()),
                     black_box(envelope.clone()),
                 );
                 receiver::check_message(
-                    black_box(mfrank.clone()),
-                    black_box(new_envelope.clone()),
+                    black_box(new_mfrank.clone()),
                     black_box(mod_pk),
                     black_box(plat_pk),
                 )
@@ -202,11 +202,11 @@ pub fn criterion_benchmark_forwarder(c: &mut Criterion) {
         let mfrank = &test.mfrank[i];
         let envelope = &test.envelope[i];
         let msg_size =  test.msg_sizes[i];
+        let new_mfrank = receiver::check_authorship(mfrank.clone(), envelope.clone());
         group.bench_with_input(BenchmarkId::new("Forward :: B", msg_size), &msg_size, |b,  &_s| {
             b.iter(||
                 forwarder::forward(
-                    black_box(mfrank.clone()),
-                    black_box(envelope.clone()),
+                    black_box(new_mfrank.clone()),
                     black_box(&mut rng),
                 )
             );
@@ -217,10 +217,10 @@ pub fn criterion_benchmark_forwarder(c: &mut Criterion) {
 
 
 criterion_group!(benches,
-    criterion_benchmark_sender,
+    // criterion_benchmark_sender,
     criterion_benchmark_receiver,
     criterion_benchmark_forwarder,
-    criterion_benchmark_platform,
+    // criterion_benchmark_platform,
     criterion_benchmark_moderator
 );
 criterion_main!(benches);

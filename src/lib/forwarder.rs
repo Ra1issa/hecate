@@ -1,6 +1,6 @@
 use crate::{
     utils,
-    types::{Mfrank, Envelope},
+    types::Mfrank,
 };
 use rand::{CryptoRng, Rng};
 
@@ -8,11 +8,9 @@ pub fn forward
 <R: CryptoRng + Rng>
 (
     mfrank: Mfrank,
-    envelope: Envelope,
     rng: &mut R,
-)-> (Mfrank, Vec<u8>){
+)-> Vec<u8>{
 
-    let com = utils::random_block(envelope.com.len(), rng);
-    let new_mfrank = Mfrank ::new(mfrank, envelope);
-    return (new_mfrank, com);
+    let com = utils::random_block(mfrank.com.len(), rng);
+    return com;
 }

@@ -4,26 +4,7 @@ use hecate::{
     types::{Moderator, Report, Trace},
 };
 
-use std::{
-    net::TcpStream,
-    io::{BufRead, BufReader},
-};
 use ed25519_dalek::PublicKey;
-
-pub fn receive_report() -> Report{
-    let address = "127.0.0.1:3000";
-    let report = match TcpStream::connect(address){
-       Ok(stream) => {
-           let mut reader = BufReader::new(stream);
-           Ok(bincode::deserialize(reader.fill_buf().unwrap()).unwrap())
-       },
-       Err(e) => {
-           println!("Failed to connect: {}", e);
-           Err(e)
-       }
-    };
-    report.unwrap()
-}
 
 pub fn verify_message(report: Report) -> Trace{
     let mut buff_pk = Vec::new();

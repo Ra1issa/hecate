@@ -65,7 +65,6 @@ pub struct Envelope{
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Report{
     pub mfrank: Mfrank,
-    pub envelope: Envelope,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]

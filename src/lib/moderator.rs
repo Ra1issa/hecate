@@ -100,13 +100,13 @@ pub fn inspect(
 ) -> Trace {
     let aad = "".as_bytes();
     let mod_pk = (Keypair::from_bytes(&m.keypair).unwrap()).public;
-    let _ = check_message(report.mfrank.clone(), report.envelope.clone(), mod_pk, plat_pk);
+    let _ = check_message(report.mfrank.clone(), mod_pk, plat_pk);
 
     let mut buf = report.mfrank.x1;
     let mut gcm_dec = Aes256GcmDecryption::new(&m.enc_sk, &report.mfrank.nonce, &aad).unwrap();
     gcm_dec.decrypt(&mut buf).unwrap();
     let time_mod = i64::from_le_bytes(report.mfrank.mod_time.try_into().unwrap());
-    let time_plat = i64::from_le_bytes(report.envelope.time.try_into().unwrap());
+    let time_plat = i64::from_le_bytes(report.mfrank.plat_time.try_into().unwrap());
 
     Trace{
         id: buf.to_vec(),

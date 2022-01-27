@@ -73,7 +73,10 @@ pub fn remove_mfrank(mfrank_bytes: &[u8]) -> String{
     let plat_pk = PublicKey::from_bytes(&plat_pk_bytes).unwrap();
     let envelope : Envelope = bincode::deserialize(tests::ENVELOPE).unwrap();
     let mfrank : Mfrank = bincode::deserialize(mfrank_bytes).unwrap();
+
     let m = mfrank.msg.clone();
-    let _ = receiver::check_message(mfrank, envelope, mod_pk, plat_pk);
+    let new_mfrank = receiver::check_authorship(mfrank.clone(), envelope);
+    let _ = receiver::check_message(new_mfrank, mod_pk, plat_pk);
+
     m
 }

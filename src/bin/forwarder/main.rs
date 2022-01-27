@@ -23,14 +23,11 @@ fn main(){
     let mut buff_env = Vec::new();
     let envelope = utils::read_from_file::<Envelope>("envelope.txt",&mut buff_env);
 
-    let _ = receiver::check_message(mfrank.clone(), envelope.clone(), mod_pk, plat_pk);
+    let new_mfrank = receiver::check_authorship(mfrank.clone(), envelope.clone());
+    let _ = receiver::check_message(new_mfrank.clone(), mod_pk, plat_pk);
 
     let mut rng = OsRng{};
-    let (new_mfrank, new_com) = forwarder::forward(
-                                        mfrank.clone(),
-                                        envelope.clone(),
-                                        &mut rng
-                                    );
+    let  new_com = forwarder::forward(new_mfrank.clone(), &mut rng);
     utils::write_to_file::<Vec<u8>>(new_com, "forwarded_envelope.txt");
     utils::write_to_file::<Mfrank>(new_mfrank, "forwarded_mfrank.txt");
 }
