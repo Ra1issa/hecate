@@ -91,14 +91,14 @@ pub fn criterion_benchmark_moderator(c: &mut Criterion) {
         });
     }
 
-    let max_time = Duration::from_secs(5);
+    let max_time = Duration::from_secs(10);
     group.measurement_time(max_time);
 
-    let batch_sizes = [1, 10, 100, 1000, 10000];
+    let batch_sizes = [1, 10, 100, 500, 1000, 2500, 5000, 7500, 10000];
     for i in 0..batch_sizes.len(){
         let batch_size = batch_sizes[i];
 
-        if batch_size == 1000 {
+        if batch_size >= 1000 {
             let max_time = Duration::from_secs(200);
             group.measurement_time(max_time);
         }else if batch_size == 10000 {
@@ -159,14 +159,18 @@ pub fn criterion_benchmark_receiver(c: &mut Criterion) {
         let envelope = &test.envelope[i];
         let msg_size =  test.msg_sizes[i];
         group.bench_with_input(BenchmarkId::new("Verify :: B", msg_size), &msg_size, |b, &_s| {
-            b.iter(||
-                receiver::check_message(
+            b.iter(||{
+                let new_envelope = receiver::check_authorship(
                     black_box(mfrank.clone()),
                     black_box(envelope.clone()),
+                );
+                receiver::check_message(
+                    black_box(mfrank.clone()),
+                    black_box(new_envelope.clone()),
                     black_box(mod_pk),
                     black_box(plat_pk),
                 )
-            );
+            });
         });
     }
 }
@@ -201,8 +205,7 @@ pub fn criterion_benchmark_forwarder(c: &mut Criterion) {
         group.bench_with_input(BenchmarkId::new("Forward :: B", msg_size), &msg_size, |b,  &_s| {
             b.iter(||
                 forwarder::forward(
-                    black_box(Some(mfrank.clone())),
-                    black_box(None),
+                    black_box(mfrank.clone()),
                     black_box(envelope.clone()),
                     black_box(&mut rng),
                 )

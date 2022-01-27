@@ -8,6 +8,24 @@ use sha2::{Sha256, Digest};
 use std::convert::TryInto;
 use ed25519_dalek::{Signature, PublicKey, Verifier};
 
+
+pub fn check_authorship(
+    mfrank: Mfrank,
+    envelope: Envelope,
+)-> Envelope{
+    for i in 0..mfrank.com.len(){
+        if mfrank.com[i] != 0 {
+            return Envelope{
+                com: mfrank.com,
+                sig: mfrank.plat_sig,
+                time: mfrank.plat_time,
+            };
+        }
+    }
+    return envelope;
+}
+
+
 pub fn check_message(
     mfrank: Mfrank,
     envelope: Envelope,
@@ -15,10 +33,10 @@ pub fn check_message(
     plat_pk: PublicKey,
 )-> Report{
     let mf = mfrank.clone();
-    let env = envelope.clone();
+    let env =  envelope.clone();
 
     // Concatenate moderator token
-    let s = [mf.x1.clone(), mf.nonce.clone(), mf.pke.clone(), mf.time.clone()].concat();
+    let s = [mf.x1.clone(), mf.nonce.clone(), mf.pke.clone(), mf.mod_time.clone()].concat();
     let e = [env.com.clone(), env.time.clone()].concat();
 
     // Verify Signatures
@@ -44,7 +62,7 @@ pub fn check_message(
     assert_eq!(h, hash.to_vec());
 
     // Verify Time
-    let _time_mod = i64::from_le_bytes(mf.time.try_into().unwrap());
+    let _time_mod = i64::from_le_bytes(mf.mod_time.try_into().unwrap());
     let _time_plat = i64::from_le_bytes(env.time.try_into().unwrap());
     // println!("timestamp diff {:?}", time_plat - time_mod);
 

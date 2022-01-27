@@ -41,7 +41,10 @@ pub fn generate_frank
                  send_sig: send_sig,
                  pke: k.public.as_bytes().to_vec(),
                  randc,
-                 time: token.time,
+                 mod_time: token.time,
+                 com: vec![0 as u8; 32],
+                 plat_sig: vec![0 as u8; 64],
+                 plat_time: vec![0 as u8; 8],
              };
      return (mf, com);
 }

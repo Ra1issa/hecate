@@ -2,7 +2,7 @@ use hecate::{
     receiver,
     forwarder,
     utils,
-    types::{Envelope, FMfrank, Mfrank},
+    types::{Envelope, Mfrank},
 };
 use ed25519_dalek::PublicKey;
 use rand::rngs::OsRng;
@@ -26,12 +26,11 @@ fn main(){
     let _ = receiver::check_message(mfrank.clone(), envelope.clone(), mod_pk, plat_pk);
 
     let mut rng = OsRng{};
-    let (new_mfrank, nw_envelope) = forwarder::forward(
-                                        Some(mfrank.clone()),
-                                        None,
+    let (new_mfrank, new_com) = forwarder::forward(
+                                        mfrank.clone(),
                                         envelope.clone(),
                                         &mut rng
-                                    ).unwrap();
-    utils::write_to_file::<Envelope>(nw_envelope, "forwarded_envelope.txt");
-    utils::write_to_file::<FMfrank>(new_mfrank, "forwarded_mfrank.txt");
+                                    );
+    utils::write_to_file::<Vec<u8>>(new_com, "forwarded_envelope.txt");
+    utils::write_to_file::<Mfrank>(new_mfrank, "forwarded_mfrank.txt");
 }

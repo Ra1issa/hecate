@@ -105,7 +105,7 @@ pub fn inspect(
     let mut buf = report.mfrank.x1;
     let mut gcm_dec = Aes256GcmDecryption::new(&m.enc_sk, &report.mfrank.nonce, &aad).unwrap();
     gcm_dec.decrypt(&mut buf).unwrap();
-    let time_mod = i64::from_le_bytes(report.mfrank.time.try_into().unwrap());
+    let time_mod = i64::from_le_bytes(report.mfrank.mod_time.try_into().unwrap());
     let time_plat = i64::from_le_bytes(report.envelope.time.try_into().unwrap());
 
     Trace{

@@ -30,28 +30,15 @@ pub struct Mfrank{
     pub send_sig: Vec<u8>,
     pub pke: Vec<u8>,
     pub randc: Vec<u8>,
-    pub time: Vec<u8>,
-}
-
-#[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct FMfrank{
-    pub msg: String,
-    pub x1: Vec<u8>,
-    pub x2: Vec<u8>,
-    pub nonce: Vec<u8>,
-    pub mod_sig: Vec<u8>,
-    pub send_sig: Vec<u8>,
-    pub pke: Vec<u8>,
-    pub randc: Vec<u8>,
     pub mod_time: Vec<u8>,
     pub com: Vec<u8>,
     pub plat_sig: Vec<u8>,
     pub plat_time: Vec<u8>,
 }
 
-impl FMfrank{
-    pub fn new(mfrank: Mfrank, envelope: Envelope) -> FMfrank{
-        FMfrank {
+impl Mfrank{
+    pub fn new(mfrank: Mfrank, envelope: Envelope) -> Mfrank{
+        Mfrank {
             msg: mfrank.msg,
             x1: mfrank.x1,
             x2: mfrank.x2,
@@ -60,14 +47,13 @@ impl FMfrank{
             send_sig: mfrank.send_sig,
             pke: mfrank.pke,
             randc: mfrank.randc,
-            mod_time: mfrank.time,
+            mod_time: mfrank.mod_time,
             com: envelope.com,
             plat_sig: envelope.sig,
             plat_time: envelope.time,
         }
     }
 }
-
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Envelope{

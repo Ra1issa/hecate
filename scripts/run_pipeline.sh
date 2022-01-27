@@ -29,7 +29,7 @@ cargo run --release --bin platform_timestamp
 echo "****************************"
 echo "****************************"
 echo "Receiver :: Verify Message Sent"
-cargo run --release --bin receive_sent
+cargo run --release --bin receive
 
 echo "****************************"
 echo "****************************"
@@ -47,6 +47,6 @@ echo "****************************"
 echo "****************************"
 echo "****************************"
 echo "Receiver :: Verify Message Forwarded"
-cargo run --release --bin receive_forward
+cargo run --release --bin receive
 echo "****************************"
 echo "****************************"

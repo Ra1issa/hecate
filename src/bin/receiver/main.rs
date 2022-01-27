@@ -21,6 +21,8 @@ fn main(){
     let mut buff_env = Vec::new();
     let envelope = utils::read_from_file::<Envelope>("envelope.txt",&mut buff_env);
 
-    let report = receiver::check_message(mfrank, envelope, mod_pk, plat_pk);
+    let new_envelope = receiver::check_authorship(mfrank.clone(), envelope.clone());
+    let report = receiver::check_message(mfrank, new_envelope, mod_pk, plat_pk);
+    
     utils::write_to_file::<Report>(report, "report.txt");
 }
