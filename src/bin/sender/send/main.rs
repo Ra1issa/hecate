@@ -8,7 +8,7 @@ use rand::rngs::OsRng;
 
 fn main(){
     let mut path = utils::get_data_path();
-    path.push("msgs/msg5.txt");
+    path.push("msgs/msg11.txt");
     let msg: String= fs::read_to_string(path).unwrap();
 
     let mut buff = Vec::new();

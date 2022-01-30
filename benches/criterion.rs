@@ -6,7 +6,7 @@ use hecate::{
     receiver,
     forwarder,
     tests,
-    types::{Moderator, Platform, Test},
+    types::{Moderator, Platform, Token, Test},
     utils,
 };
 use std::fs;
@@ -30,7 +30,7 @@ pub fn generate_test_parameters()-> Test {
     let p: Platform = bincode::deserialize(tests::PLAT).unwrap();
     let plat_pk = (Keypair::from_bytes(&p.keypair).unwrap()).public;
 
-    let token = moderator::generate_token(id.clone(), m.clone(), &mut rng);
+    let token:Token = bincode::deserialize(tests::TOKEN).unwrap();
     let msg_sizes = vec![10, 100, 250, 500, 750, 1000, 2500, 5000, 7500,  8000, 9000, 10000];
     for i in 0..msg_sizes.len(){
         let mut path = utils::get_data_path();
@@ -68,7 +68,7 @@ pub fn generate_test_parameters()-> Test {
 
 
 pub fn criterion_benchmark_moderator(c: &mut Criterion) {
-    let rng = OsRng{};
+    let mut rng = OsRng{};
     let test = generate_test_parameters();
     let mut group = c.benchmark_group("Moderator");
     group.sample_size(300);
@@ -91,34 +91,34 @@ pub fn criterion_benchmark_moderator(c: &mut Criterion) {
             );
         });
     }
-    //
-    // let max_time = Duration::from_secs(10);
-    // group.measurement_time(max_time);
-    //
-    // let batch_sizes = [1, 10, 100, 500, 1000, 2500, 5000, 7500, 10000];
-    // for i in 0..batch_sizes.len(){
-    //     let batch_size = batch_sizes[i];
-    //
-    //     if batch_size >= 1000 {
-    //         let max_time = Duration::from_secs(200);
-    //         group.measurement_time(max_time);
-    //     }else if batch_size == 10000 {
-    //         let max_time = Duration::from_secs(1500);
-    //         group.measurement_time(max_time);
-    //     }
-    //
-    //     group.bench_with_input(BenchmarkId::new("Generate Tokens :: ", batch_size), &batch_sizes, |b,  &_s| {
-    //         b.iter(||
-    //             moderator::generate_batch(
-    //                 black_box(batch_sizes[i]),
-    //                 black_box(test.id.clone()),
-    //                 black_box(test.moderator.clone()),
-    //                 black_box(&mut rng),
-    //             )
-    //         );
-    //     });
 
-    // }
+    let max_time = Duration::from_secs(10);
+    group.measurement_time(max_time);
+
+    let batch_sizes = [1, 10, 100, 500, 1000, 2500, 5000, 7500, 10000];
+    for i in 0..batch_sizes.len(){
+        let batch_size = batch_sizes[i];
+
+        if batch_size >= 1000 {
+            let max_time = Duration::from_secs(200);
+            group.measurement_time(max_time);
+        }else if batch_size == 10000 {
+            let max_time = Duration::from_secs(1500);
+            group.measurement_time(max_time);
+        }
+
+        group.bench_with_input(BenchmarkId::new("Generate Tokens :: ", batch_size), &batch_sizes, |b,  &_s| {
+            b.iter(||
+                moderator::generate_batch(
+                    black_box(batch_sizes[i]),
+                    black_box(test.id.clone()),
+                    black_box(test.moderator.clone()),
+                    black_box(&mut rng),
+                )
+            );
+        });
+
+    }
 }
 
 pub fn criterion_benchmark_sender(c: &mut Criterion) {
@@ -128,10 +128,15 @@ pub fn criterion_benchmark_sender(c: &mut Criterion) {
     let mut group = c.benchmark_group("Sender");
     group.sample_size(300);
 
+    let max_time = Duration::from_secs(15);
+    group.measurement_time(max_time);
 
     for i in 0..test.msg_sizes.len() {
         let msg = test.msg[i].to_string();
         let msg_size =  test.msg_sizes[i];
+        let nonce = utils::random_block(12, rng);
+        let aad = "".as_bytes();
+        let mut enc_sk = vec![0 as u8; 32];
         group.bench_with_input(BenchmarkId::new("Frank :: B", msg_size), &msg_size, |b,  &_s| {
             b.iter(||
                 sender::generate_frank(
