@@ -5,6 +5,8 @@
 ## Structure
 
 **Hecate** considers 5 differents types of parties:
+![structure](images/structure.png)
+
 <ol>
   <li>The <em>Moderator</em> who creates tokens for users a-priori and handles user reports. The Moderatoris assumed to be seperate from the Platform. </li>
   <li>The <em>Sender</em> of a message who wishes to send a message via the EEMS extended with abuse reporting to their desired message recipient. Prior to sending the message, the Sender partakes in an offline pre-processing phase where they receive tokens from the Moderator that they later use when sending the message.</li>
@@ -12,7 +14,6 @@
   <li>The <em>Forwarder</em> of a message who just forwards the message along and is assumed to have already received and apropriately verified the message.</li>
   <li>The <em>Platform</em> (e.g. Signal Server) who relays encrypted messages to their appropriate recipients and timestamps them along the way.</li>
 </ol>
-
 
 Each party can be invoked seperately after they are provided with the material they need (e.g. the sender should be first given tokens before being able to send message). Note that parties write their intended output to files but may easily be changed to send their outputs over TCP channels (the code for doing so is provided is certain cases).
 
@@ -74,11 +75,11 @@ You can find a detailed output in target/criterion.
 
 We report below the online runtime of Hecate’s components as a function of message size in bytes on an AWS t3.small instance.
 
-![alt-text](https://github.com/Ra1issa/hecate/blob/main/results/bench1.png)
+![bench1](images/bench1.png)
 
 We report below the Runtime and dollar pricing of pre-processing token generation (TGen) as function of the token batch size.
 
-![alt-text](https://github.com/Ra1issa/hecate/blob/main/results/bench2.png)
+![bench2](images/bench2.png)
 
 Please refer to [[eprint/2021/1686]](https://eprint.iacr.org/2021/1686) for more experimental details.
 
