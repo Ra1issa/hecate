@@ -67,7 +67,7 @@ pub fn generate_test_parameters()-> Test {
 }
 
 
-pub fn criterion_benchmark_moderator(c: &mut Criterion) {
+pub fn moderator(c: &mut Criterion) {
     let mut rng = OsRng{};
     let test = generate_test_parameters();
     let mut group = c.benchmark_group("Moderator");
@@ -121,7 +121,7 @@ pub fn criterion_benchmark_moderator(c: &mut Criterion) {
     }
 }
 
-pub fn criterion_benchmark_sender(c: &mut Criterion) {
+pub fn sender(c: &mut Criterion) {
     let mut rng = OsRng{};
     let test = generate_test_parameters();
 
@@ -134,7 +134,7 @@ pub fn criterion_benchmark_sender(c: &mut Criterion) {
     for i in 0..test.msg_sizes.len() {
         let msg = test.msg[i].to_string();
         let msg_size =  test.msg_sizes[i];
-        let nonce = utils::random_block(12, rng);
+        let nonce = utils::random_block(12, &mut rng);
         let aad = "".as_bytes();
         let mut enc_sk = vec![0 as u8; 32];
         group.bench_with_input(BenchmarkId::new("Frank :: B", msg_size), &msg_size, |b,  &_s| {
@@ -149,7 +149,7 @@ pub fn criterion_benchmark_sender(c: &mut Criterion) {
     }
 }
 
-pub fn criterion_benchmark_receiver(c: &mut Criterion) {
+pub fn receiver(c: &mut Criterion) {
     let test = generate_test_parameters();
     let mut group = c.benchmark_group("Receiver");
     group.sample_size(300);
@@ -180,7 +180,7 @@ pub fn criterion_benchmark_receiver(c: &mut Criterion) {
     }
 }
 
-pub fn criterion_benchmark_platform(c: &mut Criterion) {
+pub fn platform(c: &mut Criterion) {
     let test = generate_test_parameters();
     let mut group = c.benchmark_group("Platform");
     group.sample_size(300);
@@ -196,7 +196,7 @@ pub fn criterion_benchmark_platform(c: &mut Criterion) {
     ));
 }
 
-pub fn criterion_benchmark_forwarder(c: &mut Criterion) {
+pub fn forwarder(c: &mut Criterion) {
     let test = generate_test_parameters();
     let mut group = c.benchmark_group("Forwarder");
     group.sample_size(300);
@@ -222,10 +222,10 @@ pub fn criterion_benchmark_forwarder(c: &mut Criterion) {
 
 
 criterion_group!(benches,
-    criterion_benchmark_sender,
-    criterion_benchmark_receiver,
-    criterion_benchmark_forwarder,
-    criterion_benchmark_platform,
-    criterion_benchmark_moderator
+    sender,
+    receiver,
+    forwarder,
+    platform,
+    moderator
 );
 criterion_main!(benches);
