@@ -98,10 +98,6 @@ You will need to clone the following two libraries (modified for use with Hecate
 
 Make sure that they are in the same directory as Hecate, otherwise you will need to modify each repos Cargo.toml and the makefile in signal-cli accordingly.
 
-## Disclaimer
-
-You will also need at least one phone number to register and use with signal-cli. It's highly recommended that you DO NOT use your own phone number. You can try to use a phone number provided by Google voice instead.
-
 ## Installation
 
 In [**signal-cli**](https://github.com/Ra1issa/signal-cli) you will find a makefile that will allow you to clean, build and run the application.
@@ -109,11 +105,23 @@ In [**signal-cli**](https://github.com/Ra1issa/signal-cli) you will find a makef
   <li> You will need to install the dependencies of each as specified in their original repositories [AsamK/signal-cli](https://github.com/AsamK/signal-cli) and [signalapp/libsignal-client](https://github.com/signalapp/libsignal-client) respectively.</li>
   <li> Clean up the repository first via <code>make clean</code></li>
   <li> Build all the repositories via <code>make build_all</code>. You can alternatively build each of Hecate, libgsignal-client or signal-cli individually.</li>
+</ol>
+
+## Running
+
+### Disclaimer
+
+You will need at least one phone number to register and use with signal-cli. It's highly recommended that you DO NOT use your own phone number. You can try to use a phone number provided by Google voice instead.
+
+### Walkthrough
+
+<ol>
   <li> Modify the makefile with your desired phone numbers and messages of choice</li>
   <li> Register your desired phone number (or numbers if you would like try out both a sender and a receiver) in signal-cli by following the steps in [AsamK/signal-cli](https://github.com/AsamK/signal-cli). You will most likely need to have a captcha.</li>
   <li> (Optional) If you are running the receiver using signal-cli: Run the receiver daemon using <code> make run_receiver_daemon</code> (after changing the makefile with your desired phone numbers). You can alternatively just fetch any received message without the daemon via <cod>run_receive</code></li>
   <li>Send a message using the sender via <code> make run_send</code>. Note that you can alternatively run a daemon for the sender and use the dbus interface to send messages (see [AsamK/signal-cli/wiki](https://github.com/AsamK/signal-cli/wiki/DBus-service))</li>
 </ol>
+
 
 ## Important Notes
 <ol>
